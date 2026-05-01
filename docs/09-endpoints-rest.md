@@ -1,96 +1,89 @@
 # Endpoints REST Planejados para o VolunHub
 
 ## Auth
-- POST /auth/signup
-  - Descrição: cadastrar novo usuário (voluntário ou organização).
-  - Autorizado: público.
+- POST /auth/register
+  - Descricao: cadastrar novo usuario (voluntario ou organizacao).
+  - Autorizado: publico.
   - Corpo: `{ "nome", "email", "senha", "perfil", "telefone" }`
 
 - POST /auth/login
-  - Descrição: autenticar usuário e retornar JWT.
-  - Autorizado: público.
+  - Descricao: autenticar usuario e retornar JWT.
+  - Autorizado: publico.
   - Corpo: `{ "email", "senha" }`
 
-## Usuários
+## Usuarios
 - GET /usuarios/me
-  - Descrição: obter dados do usuário autenticado.
-  - Autorizado: voluntário ou organização.
+  - Descricao: obter dados do usuario autenticado.
+  - Autorizado: voluntario ou organizacao.
 
 - PUT /usuarios/me
-  - Descrição: atualizar dados do usuário autenticado.
-  - Autorizado: voluntário ou organização.
+  - Descricao: atualizar dados do usuario autenticado.
+  - Autorizado: voluntario ou organizacao.
   - Corpo: `{ "nome", "telefone" }`
 
 ## Projetos
 - GET /projetos
-  - Descrição: listar projetos com filtros.
-  - Autorizado: público.
+  - Descricao: listar projetos com filtros.
+  - Autorizado: publico.
 
 - GET /projetos/{id}
-  - Descrição: obter detalhes de um projeto.
-  - Autorizado: público.
+  - Descricao: obter detalhes de um projeto.
+  - Autorizado: publico.
 
 - POST /projetos
-  - Descrição: cadastrar projeto.
-  - Autorizado: organização.
-  - Corpo: `{ "titulo", "descricao", "local", "dataInicio", "dataFim", "vagas", "status", "idCategoria" }`
+  - Descricao: cadastrar projeto.
+  - Autorizado: organizacao.
+  - Corpo: `{ "titulo", "descricao", "cidade", "estado", "local", "tipoParticipacao", "dataInicio", "dataFim", "vagas", "status", "idCategoria" }`
 
 - PUT /projetos/{id}
-  - Descrição: atualizar projeto.
-  - Autorizado: organização proprietária.
+  - Descricao: atualizar projeto.
+  - Autorizado: organizacao proprietaria.
   - Corpo: campos do projeto.
 
 - DELETE /projetos/{id}
-  - Descrição: excluir projeto.
-  - Autorizado: organização proprietária.
+  - Descricao: excluir projeto.
+  - Autorizado: organizacao proprietaria.
 
 ## Categorias
 - GET /categorias
-  - Descrição: listar categorias de projetos.
-  - Autorizado: público.
+  - Descricao: listar categorias de projetos.
+  - Autorizado: publico.
 
 - GET /categorias/{id}
-  - Descrição: obter detalhes de categoria.
-  - Autorizado: público.
+  - Descricao: obter detalhes de categoria.
+  - Autorizado: publico.
 
-- POST /categorias
-  - Descrição: criar nova categoria.
-  - Autorizado: organização ou administrador futuro.
-  - Corpo: `{ "nome", "descricao" }`
+- Observacao: categorias sao previamente cadastradas no banco e apenas selecionadas pelas organizacoes ao criar ou editar projetos.
 
-- PUT /categorias/{id}
-  - Descrição: atualizar categoria.
-  - Autorizado: organização ou administrador futuro.
-
-- DELETE /categorias/{id}
-  - Descrição: excluir categoria.
-  - Autorizado: organização ou administrador futuro.
-
-## Inscrições
+## Inscricoes
 - POST /inscricoes
-  - Descrição: voluntário se inscrever em projeto.
-  - Autorizado: voluntário.
+  - Descricao: voluntario se inscrever em projeto.
+  - Autorizado: voluntario.
   - Corpo: `{ "idProjeto" }`
 
 - GET /inscricoes/me
-  - Descrição: listar inscrições do voluntário autenticado.
-  - Autorizado: voluntário.
+  - Descricao: listar inscricoes do voluntario autenticado.
+  - Autorizado: voluntario.
 
 - GET /inscricoes/projeto/{idProjeto}
-  - Descrição: listar inscrições de um projeto.
-  - Autorizado: organização proprietária.
+  - Descricao: listar inscricoes de um projeto.
+  - Autorizado: organizacao proprietaria.
 
 - PUT /inscricoes/{id}
-  - Descrição: atualizar status da inscrição.
-  - Autorizado: organização proprietária.
+  - Descricao: atualizar status da inscricao.
+  - Autorizado: organizacao proprietaria.
   - Corpo: `{ "status" }`
 
-## Histórico
+## Historico
 - GET /historico/me
-  - Descrição: listar histórico de participação do voluntário.
-  - Autorizado: voluntário.
+  - Descricao: listar historico de participacao do voluntario.
+  - Autorizado: voluntario.
+
+- GET /historico/projeto/{idProjeto}
+  - Descricao: listar historico de participacao vinculado a um projeto.
+  - Autorizado: organizacao proprietaria.
 
 - POST /historico
-  - Descrição: registrar histórico de participação.
-  - Autorizado: organização ou sistema.
+  - Descricao: registrar historico de participacao.
+  - Autorizado: organizacao ou sistema.
   - Corpo: `{ "idVoluntario", "idProjeto", "situacao", "observacao" }`

@@ -1,48 +1,49 @@
 # Planejamento de Filtros de Busca do VolunHub
 
-## 6.1 Filtros obrigatórios
-- Localização:
+## 6.1 Filtros obrigatorios
+- Localizacao:
   - Cidade
   - Estado
+- Tipo de participacao (PRESENCIAL, REMOTO, HIBRIDO)
 - Categoria do projeto
 - Status do projeto (ATIVO, ENCERRADO)
 - Disponibilidade de vagas
 
 ## 6.2 Filtros recomendados
-- Data de início
-- Data de término
-- Projetos com inscrições abertas
-- Tipo de participação (presencial ou remoto, se aplicável)
+- Data de inicio
+- Data de termino
+- Projetos com inscricoes abertas
+- Palavra-chave
 
-## 6.3 Filtros avançados
-- Busca por palavra-chave (título e descrição)
-- Organização responsável
-- Ordenação por:
+## 6.3 Filtros avancados
+- Busca por palavra-chave (titulo e descricao)
+- Organizacao responsavel
+- Ordenacao por:
   - Mais recentes
   - Mais antigos
 
 ## 6.4 Comportamento dos filtros
-- Permitir múltiplos filtros simultâneos.
+- Permitir multiplos filtros simultaneos.
 - Permitir limpar filtros facilmente.
 - Atualizar resultados dinamicamente.
-- Funcionar para usuários logados e não logados.
+- Funcionar para usuarios logados e nao logados.
 
-## 6.5 Impacto técnico
+## 6.5 Impacto tecnico
 - Implementar filtros usando query parameters na API REST.
 - Aplicar filtros no banco com `WHERE`, `LIKE`, `BETWEEN` e conditions adicionais.
-- Usar índices nas colunas de busca mais comuns para melhorar performance.
-- Evitar consultas complexas e priorizar clareza do código.
+- Usar indices nas colunas de busca mais comuns para melhorar performance.
+- Evitar consultas complexas e priorizar clareza do codigo.
 
-## 6.6 Padrão de endpoint
-- `GET /projetos?cidade=&estado=&categoria=&status=&dataInicio=&dataFim=&palavraChave=&ordenacao=`
+## 6.6 Padrao de endpoint
+- `GET /projetos?cidade=&estado=&tipoParticipacao=&categoria=&status=&dataInicio=&dataFim=&palavraChave=&ordenacao=`
 
-## 6.7 Regras de negócio
-- Apenas projetos ATIVOS devem aparecer por padrão.
-- Projetos sem vagas podem ser exibidos com indicação de vagas esgotadas.
-- Não permitir duplicidade nos resultados.
-- Filtros opcionais não devem quebrar a busca; devem ser ignorados se não fornecidos.
+## 6.7 Regras de negocio
+- Apenas projetos ATIVOS devem aparecer por padrao.
+- Projetos sem vagas podem ser exibidos com indicacao de vagas esgotadas.
+- Nao permitir duplicidade nos resultados.
+- Filtros opcionais nao devem quebrar a busca; devem ser ignorados se nao fornecidos.
 
-## 6.8 Diretriz técnica
-- Manter implementação simples com Spring Boot e JPA.
-- Evitar geolocalização avançada nesta fase.
-- Priorizar clareza, consistência e usabilidade.
+## 6.8 Diretriz tecnica
+- Manter implementacao simples com Spring Boot e JPA.
+- Evitar geolocalizacao avancada nesta fase.
+- Priorizar clareza, consistencia e usabilidade.

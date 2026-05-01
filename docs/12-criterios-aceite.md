@@ -1,28 +1,30 @@
-# Critérios de Aceite do VolunHub
+# Criterios de Aceite do VolunHub
 
 ## Funcionalidades essenciais
-- Cadastro e login de voluntários e organizações funcionam.
-- Organizações podem cadastrar, editar e excluir projetos.
-- Voluntários podem consultar projetos sem login.
-- Voluntários podem se inscrever em projetos.
-- Organizações podem visualizar inscrições de seus projetos.
-- Voluntários podem consultar seu histórico de participação.
+- Cadastro e login de voluntarios e organizacoes funcionam.
+- Organizacoes podem cadastrar, editar e excluir projetos.
+- Organizacoes selecionam categorias existentes ao cadastrar ou editar projetos.
+- Voluntarios podem consultar projetos sem login.
+- Voluntarios podem se inscrever em projetos.
+- Organizacoes podem visualizar inscricoes de seus projetos.
+- Voluntarios podem consultar seu historico de participacao.
+- Organizacoes podem consultar historico por projeto.
 
-## Segurança e autenticação
-- Senhas são armazenadas de forma criptografada.
-- Rotas protegidas exigem JWT válido.
-- Perfis de usuário diferenciam voluntários e organizações.
+## Seguranca e autenticacao
+- Senhas sao armazenadas de forma criptografada.
+- Rotas protegidas exigem JWT valido.
+- Perfis de usuario diferenciam voluntarios e organizacoes.
 
-## Banco de dados e persistência
+## Banco de dados e persistencia
 - Modelo de dados com entidades e relacionamentos definidos.
-- ENUMs de status implementados para projetos e inscrições.
-- Categorias de projetos são persistidas corretamente.
+- ENUMs de status e tipo de participacao estao implementados.
+- Categorias de projetos estao previamente cadastradas e persistidas corretamente.
 
 ## Busca e filtros
-- Projeto pode ser buscado com filtros básicos.
-- Filtros são opcionais e não quebram a busca.
+- Projeto pode ser buscado por cidade, estado e tipo de participacao.
+- Filtros sao opcionais e nao quebram a busca.
 
-## Documentação e entrega
-- Todos os documentos em `/docs` estão presentes.
+## Documentacao e entrega
+- Todos os documentos em `/docs` estao presentes.
 - O projeto possui `.gitignore` apropriado.
-- O repositório Git está inicializado e os commits são granulares.
+- O repositorio Git esta inicializado e os commits sao granulares.
