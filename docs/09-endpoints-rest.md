@@ -22,9 +22,21 @@
   - Corpo: `{ "nome", "telefone" }`
 
 ## Projetos
-- GET /projetos
-  - Descricao: listar projetos com filtros.
+- GET /projetos?page=&size=&cidade=&estado=&tipoParticipacao=&categoria=&status=&dataInicio=&dataFim=&palavraChave=&ordenacao=
+  - Descricao: listar projetos com filtros e paginacao.
   - Autorizado: publico.
+  - Parametros:
+    - `page`: numero da pagina, com inicio em `0`.
+    - `size`: quantidade de registros por pagina.
+    - `cidade`: filtro por cidade.
+    - `estado`: filtro por estado.
+    - `tipoParticipacao`: filtro por tipo de participacao.
+    - `categoria`: filtro por categoria.
+    - `status`: filtro por status do projeto.
+    - `dataInicio`: filtro por data inicial.
+    - `dataFim`: filtro por data final.
+    - `palavraChave`: busca textual em campos do projeto.
+    - `ordenacao`: criterio de ordenacao.
 
 - GET /projetos/{id}
   - Descricao: obter detalhes de um projeto.

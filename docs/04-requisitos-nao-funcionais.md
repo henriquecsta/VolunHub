@@ -1,27 +1,30 @@
-# Requisitos Não Funcionais do VolunHub
+# Requisitos Nao Funcionais do VolunHub
 
-## Segurança
+## Seguranca
 - Senhas devem ser armazenadas de forma criptografada usando hashing seguro.
-- A autenticação deve usar JWT para proteger rotas e verificar permissões.
-- Apenas usuários autenticados podem acessar rotas privadas.
-- Dados sensíveis não devem ser expostos em respostas de API.
+- A autenticacao deve usar JWT para proteger rotas e verificar permissoes.
+- Apenas usuarios autenticados podem acessar rotas privadas.
+- Dados sensiveis nao devem ser expostos em respostas de API.
 
 ## Usabilidade
-- A interface deve ser clara e intuitiva para voluntários e organizações.
+- A interface deve ser clara e intuitiva para voluntarios e organizacoes.
 - O sistema deve permitir buscar projetos sem exigir login.
-- Filtros devem ser fáceis de usar e permitir limpeza rápida.
+- Filtros devem ser faceis de usar e permitir limpeza rapida.
 
 ## Desempenho
-- A API deve responder em tempo aceitável para consultas de projetos e filtros.
-- Consultas de busca devem usar parâmetros de query e filtros no banco de dados.
-- O sistema deve evitar retornos duplicados e aplicar paginação futura, se necessário.
+- A API deve responder em tempo aceitavel para consultas de projetos e filtros.
+- Consultas de busca devem usar parametros de query e filtros no banco de dados.
+- A listagem de projetos deve suportar paginacao.
+- O sistema deve limitar a quantidade de registros retornados por requisicao.
+- A paginacao deve ser aplicada antes de enviar os dados ao frontend.
+- O sistema deve evitar retornos duplicados.
 
-## Organização de código
+## Organizacao de codigo
 - Backend deve ser estruturado em camadas: controllers, services, repositories, entities e dtos.
-- Frontend deve conter código organizado em `/frontend/src` com componentes reutilizáveis.
-- O projeto deve ser documentado para facilitar evolução posterior.
+- Frontend deve conter codigo organizado em `/frontend/src` com componentes reutilizaveis.
+- O projeto deve ser documentado para facilitar evolucao posterior.
 
-## Persistência de dados
+## Persistencia de dados
 - O banco de dados deve ser MySQL.
 - O esquema deve usar tabelas normalizadas e relacionamentos adequados.
-- Categorias, projetos, usuários, inscrições e histórico devem ser armazenados com chaves estrangeiras.
+- Categorias, projetos, usuarios, inscricoes e historico devem ser armazenados com chaves estrangeiras.

@@ -18,7 +18,8 @@ RF15 - O sistema deve manter categorias de projetos previamente cadastradas no b
 RF16 - O sistema deve armazenar historico de participacao dos voluntarios.
 RF17 - O sistema deve manter autenticacao JWT para rotas protegidas.
 RF18 - O sistema deve fornecer endpoints REST para todas as operacoes previstas.
-RF19 - O sistema deve permitir filtros de busca por cidade, estado, categoria, tipo de participacao, status e vagas.
+RF19 - O sistema deve permitir filtros de busca por cidade, estado, categoria, tipoParticipacao, status, dataInicio, dataFim e palavraChave.
 RF20 - O sistema deve permitir que projetos ATIVOS sejam exibidos por padrao nas buscas.
 RF21 - O sistema deve permitir que organizacoes selecionem categorias existentes ao cadastrar ou editar projetos.
 RF22 - O sistema deve fornecer consulta de historico por projeto.
+RF23 - O sistema deve permitir paginacao na listagem de projetos usando os parametros `page` e `size`.
