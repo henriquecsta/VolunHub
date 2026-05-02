@@ -10,12 +10,19 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "historico_participacao")
+@Table(
+    name = "historico_participacao",
+    uniqueConstraints = @UniqueConstraint(
+        name = "uk_historico_voluntario_projeto",
+        columnNames = {"id_voluntario", "id_projeto"}
+    )
+)
 public class HistoricoParticipacao {
 
     @Id
