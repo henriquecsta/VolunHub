@@ -3,6 +3,7 @@ package com.volunhub.backend.config;
 import com.volunhub.backend.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -30,6 +31,10 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/auth/**", "/categorias/**", "/error").permitAll()
+                .requestMatchers(HttpMethod.GET, "/projetos", "/projetos/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/projetos").hasRole("ORGANIZACAO")
+                .requestMatchers(HttpMethod.PUT, "/projetos/**").hasRole("ORGANIZACAO")
+                .requestMatchers(HttpMethod.DELETE, "/projetos/**").hasRole("ORGANIZACAO")
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider)
