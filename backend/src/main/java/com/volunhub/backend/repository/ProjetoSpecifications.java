@@ -18,16 +18,22 @@ public final class ProjetoSpecifications {
     public static Specification<Projeto> comFiltros(ProjetoFiltroDto filtros) {
         StatusProjeto status = filtros.getStatus() != null ? filtros.getStatus() : StatusProjeto.ATIVO;
 
-        return Specification.allOf(
-            cidadeContem(filtros.getCidade()),
-            estadoIgual(filtros.getEstado()),
-            tipoParticipacaoIgual(filtros.getTipoParticipacao()),
-            categoriaIgual(filtros.getIdCategoria()),
-            statusIgual(status),
-            dataInicioMaiorOuIgual(filtros.getDataInicio()),
-            dataFimMenorOuIgual(filtros.getDataFim()),
-            palavraChaveContem(filtros.getPalavraChave())
-        );
+        Specification<Projeto> specification = statusIgual(status);
+        specification = andIfPresent(specification, cidadeContem(filtros.getCidade()));
+        specification = andIfPresent(specification, estadoIgual(filtros.getEstado()));
+        specification = andIfPresent(specification, tipoParticipacaoIgual(filtros.getTipoParticipacao()));
+        specification = andIfPresent(specification, categoriaIgual(filtros.getIdCategoria()));
+        specification = andIfPresent(specification, dataInicioMaiorOuIgual(filtros.getDataInicio()));
+        specification = andIfPresent(specification, dataFimMenorOuIgual(filtros.getDataFim()));
+        specification = andIfPresent(specification, palavraChaveContem(filtros.getPalavraChave()));
+        return specification;
+    }
+
+    private static Specification<Projeto> andIfPresent(
+        Specification<Projeto> specification,
+        Specification<Projeto> other
+    ) {
+        return other == null ? specification : specification.and(other);
     }
 
     private static Specification<Projeto> cidadeContem(String cidade) {
