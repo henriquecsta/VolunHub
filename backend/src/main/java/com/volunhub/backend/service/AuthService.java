@@ -8,6 +8,7 @@ import com.volunhub.backend.entity.Usuario;
 import com.volunhub.backend.entity.enums.PerfilUsuario;
 import com.volunhub.backend.repository.UsuarioRepository;
 import com.volunhub.backend.security.JwtService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -22,6 +23,8 @@ import java.util.Locale;
 
 @Service
 public class AuthService {
+
+    private static final String DUPLICATE_ENTRY_MESSAGE = "duplicate entry";
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
@@ -57,7 +60,17 @@ public class AuthService {
         usuario.setPerfil(perfil);
         usuario.setTelefone(normalizeOptionalValue(request.telefone()));
 
-        Usuario saved = usuarioRepository.save(usuario);
+        Usuario saved;
+        try {
+            saved = usuarioRepository.saveAndFlush(usuario);
+        }
+        catch (DataIntegrityViolationException ex) {
+            if (isDuplicateEmailViolation(ex)) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Email ja cadastrado.");
+            }
+
+            throw ex;
+        }
 
         return new RegisterResponseDto(
             saved.getIdUsuario(),
@@ -118,5 +131,25 @@ public class AuthService {
 
         String normalizedValue = value.trim();
         return normalizedValue.isEmpty() ? null : normalizedValue;
+    }
+
+    private boolean isDuplicateEmailViolation(Throwable throwable) {
+        Throwable current = throwable;
+
+        while (current != null) {
+            String message = current.getMessage();
+
+            if (message != null) {
+                String normalizedMessage = message.toLowerCase(Locale.ROOT);
+
+                if (normalizedMessage.contains(DUPLICATE_ENTRY_MESSAGE) || normalizedMessage.contains("email")) {
+                    return true;
+                }
+            }
+
+            current = current.getCause();
+        }
+
+        return false;
     }
 }

@@ -12,6 +12,7 @@ import com.volunhub.backend.repository.CategoriaRepository;
 import com.volunhub.backend.repository.ProjetoRepository;
 import com.volunhub.backend.repository.ProjetoSpecifications;
 import com.volunhub.backend.repository.UsuarioRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -93,7 +94,16 @@ public class ProjetoService {
     @Transactional
     public void excluirProjeto(Long idProjeto, String emailUsuarioAutenticado) {
         Projeto projeto = buscarProjetoDaOrganizacao(idProjeto, emailUsuarioAutenticado);
-        projetoRepository.delete(projeto);
+        try {
+            projetoRepository.delete(projeto);
+            projetoRepository.flush();
+        }
+        catch (DataIntegrityViolationException ex) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Projeto nao pode ser excluido pois possui registros vinculados."
+            );
+        }
     }
 
     private void aplicarDados(Projeto projeto, ProjetoCreateRequestDto request, Categoria categoria) {
