@@ -12,6 +12,16 @@ function normalizeProjectId(idProjeto) {
   return normalizedId;
 }
 
+function normalizeSubscriptionId(idInscricao) {
+  const normalizedId = Number(idInscricao);
+
+  if (!Number.isInteger(normalizedId) || normalizedId <= 0) {
+    throw new Error('Inscricao invalida para atualizacao.');
+  }
+
+  return normalizedId;
+}
+
 function adaptInscricao(apiInscricao, project = null) {
   return {
     id: apiInscricao.idInscricao,
@@ -50,6 +60,14 @@ export async function listarInscricoesDoProjeto(idProjeto) {
   const inscricoes = Array.isArray(response.data) ? response.data : [];
 
   return inscricoes.map(adaptInscricao);
+}
+
+export async function atualizarStatusInscricao(idInscricao, status) {
+  const response = await api.put(`/inscricoes/${normalizeSubscriptionId(idInscricao)}`, {
+    status,
+  });
+
+  return adaptInscricao(response.data);
 }
 
 export async function listarMinhasInscricoesComProjetos() {

@@ -6,7 +6,7 @@ import Button from '../components/ui/Button';
 import PageSection from '../components/ui/PageSection';
 import { ROUTES } from '../constants/routes';
 import { useAuth } from '../hooks/useAuth';
-import { listarInscricoesDoProjeto } from '../services/inscricaoService';
+import { atualizarStatusInscricao, listarInscricoesDoProjeto } from '../services/inscricaoService';
 import { listarProjetosDaOrganizacao } from '../services/projetoService';
 import { getErrorMessage } from '../utils/http';
 
@@ -17,6 +17,9 @@ function OrganizationDashboardPage() {
   const [subscriptionsByProjectId, setSubscriptionsByProjectId] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [actionInProgress, setActionInProgress] = useState(null);
+  const [actionErrorMessage, setActionErrorMessage] = useState('');
+  const [actionSuccessMessage, setActionSuccessMessage] = useState('');
 
   useEffect(() => {
     let shouldIgnore = false;
@@ -24,6 +27,8 @@ function OrganizationDashboardPage() {
     async function loadDashboard() {
       setIsLoading(true);
       setErrorMessage('');
+      setActionErrorMessage('');
+      setActionSuccessMessage('');
 
       try {
         const organizationProjects = await listarProjetosDaOrganizacao(idUsuario);
@@ -74,6 +79,52 @@ function OrganizationDashboardPage() {
   }, [idUsuario]);
 
   const pendingCount = subscriptions.filter((subscription) => subscription.status === 'PENDENTE').length;
+
+  async function handleUpdateSubscriptionStatus(subscription, status) {
+    if (!subscription?.id || subscription.status !== 'PENDENTE' || actionInProgress) {
+      return;
+    }
+
+    setActionInProgress({ id: subscription.id, status });
+    setActionErrorMessage('');
+    setActionSuccessMessage('');
+
+    try {
+      const response = await atualizarStatusInscricao(subscription.id, status);
+      const updatedSubscription = {
+        ...subscription,
+        ...response,
+        projectTitle: response.projectTitle || subscription.projectTitle,
+        projectStatus: response.projectStatus || subscription.projectStatus,
+        projectStatusLabel: response.projectStatusLabel || subscription.projectStatusLabel,
+      };
+
+      setSubscriptions((currentSubscriptions) =>
+        currentSubscriptions.map((currentSubscription) =>
+          currentSubscription.id === updatedSubscription.id ? updatedSubscription : currentSubscription,
+        ),
+      );
+      setSubscriptionsByProjectId((currentSubscriptionsByProjectId) => ({
+        ...currentSubscriptionsByProjectId,
+        [updatedSubscription.projectId]: (
+          currentSubscriptionsByProjectId[updatedSubscription.projectId] ?? []
+        ).map((currentSubscription) =>
+          currentSubscription.id === updatedSubscription.id ? updatedSubscription : currentSubscription,
+        ),
+      }));
+      setActionSuccessMessage(
+        status === 'APROVADA'
+          ? 'Inscricao aprovada com sucesso.'
+          : 'Inscricao recusada com sucesso.',
+      );
+    } catch (error) {
+      setActionErrorMessage(
+        getErrorMessage(error, 'Nao foi possivel atualizar esta inscricao.'),
+      );
+    } finally {
+      setActionInProgress(null);
+    }
+  }
 
   return (
     <div className="space-y-8">
@@ -134,14 +185,63 @@ function OrganizationDashboardPage() {
       {!isLoading && !errorMessage && subscriptions.length ? (
         <section className="space-y-4">
           <h2 className="font-display text-2xl font-semibold text-ink-900">Inscricoes recebidas</h2>
+          {actionSuccessMessage ? (
+            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+              {actionSuccessMessage}
+            </div>
+          ) : null}
+          {actionErrorMessage ? (
+            <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {actionErrorMessage}
+            </div>
+          ) : null}
           <div className="space-y-4">
             {subscriptions.map((subscription) => (
-              <OrganizationSubscriptionCard key={subscription.id} subscription={subscription} />
+              <OrganizationSubscriptionCard
+                actions={getSubscriptionActions({
+                  actionInProgress,
+                  onUpdateStatus: handleUpdateSubscriptionStatus,
+                  subscription,
+                })}
+                key={subscription.id}
+                subscription={subscription}
+              />
             ))}
           </div>
         </section>
       ) : null}
     </div>
+  );
+}
+
+function getSubscriptionActions({ actionInProgress, onUpdateStatus, subscription }) {
+  if (subscription.status !== 'PENDENTE') {
+    return null;
+  }
+
+  const isActionInProgress = Boolean(actionInProgress);
+  const isApproving = actionInProgress?.id === subscription.id && actionInProgress?.status === 'APROVADA';
+  const isRejecting = actionInProgress?.id === subscription.id && actionInProgress?.status === 'RECUSADA';
+
+  return (
+    <>
+      <Button
+        disabled={isActionInProgress}
+        onClick={() => onUpdateStatus(subscription, 'APROVADA')}
+        size="sm"
+        variant="secondary"
+      >
+        {isApproving ? 'Aprovando...' : 'Aprovar'}
+      </Button>
+      <Button
+        disabled={isActionInProgress}
+        onClick={() => onUpdateStatus(subscription, 'RECUSADA')}
+        size="sm"
+        variant="ghost"
+      >
+        {isRejecting ? 'Recusando...' : 'Recusar'}
+      </Button>
+    </>
   );
 }
 
