@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import PageLoader from '../components/feedback/PageLoader';
 import StatusPanel from '../components/feedback/StatusPanel';
 import ProjectCard from '../components/projects/ProjectCard';
@@ -13,26 +14,22 @@ import { ROUTES } from '../constants/routes';
 import { listarCategorias } from '../services/categoriaService';
 import { listarProjetos } from '../services/projetoService';
 import { getErrorMessage } from '../utils/http';
-
-const INITIAL_FILTERS = {
-  termo: '',
-  local: '',
-  categoria: '',
-  status: 'ATIVO',
-};
+import {
+  areProjectFiltersEqual,
+  buildProjectListSearchParams,
+  createProjectFilters,
+  parseProjectListQuery,
+} from '../utils/projectFilterQuery';
 
 const PAGE_SIZE = 6;
 
-function createInitialFilters() {
-  return { ...INITIAL_FILTERS };
-}
-
 function ProjectsPage() {
-  const [filters, setFilters] = useState(() => createInitialFilters());
-  const [activeFilters, setActiveFilters] = useState(() => createInitialFilters());
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [filters, setFilters] = useState(() => parseProjectListQuery(searchParams).filters);
+  const [activeFilters, setActiveFilters] = useState(() => parseProjectListQuery(searchParams).filters);
   const [projectPage, setProjectPage] = useState({
     items: [],
-    page: 0,
+    page: parseProjectListQuery(searchParams).page,
     size: PAGE_SIZE,
     totalElements: 0,
     totalPages: 0,
@@ -45,6 +42,26 @@ function ProjectsPage() {
   const [categories, setCategories] = useState([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [categoriesErrorMessage, setCategoriesErrorMessage] = useState('');
+
+  useEffect(() => {
+    const nextQueryState = parseProjectListQuery(searchParams);
+
+    setFilters((currentFilters) =>
+      areProjectFiltersEqual(currentFilters, nextQueryState.filters)
+        ? currentFilters
+        : nextQueryState.filters,
+    );
+    setActiveFilters((currentFilters) =>
+      areProjectFiltersEqual(currentFilters, nextQueryState.filters)
+        ? currentFilters
+        : nextQueryState.filters,
+    );
+    setProjectPage((currentPage) => (
+      currentPage.page === nextQueryState.page
+        ? currentPage
+        : { ...currentPage, page: nextQueryState.page }
+    ));
+  }, [searchParams]);
 
   useEffect(() => {
     let shouldIgnore = false;
@@ -145,14 +162,13 @@ function ProjectsPage() {
 
   function handleSubmit(event) {
     event.preventDefault();
-    setActiveFilters({ ...filters });
-    setProjectPage((currentPage) => ({ ...currentPage, page: 0 }));
+    setSearchParams(buildProjectListSearchParams(filters, 0));
   }
 
   function handleResetFilters() {
-    setFilters(createInitialFilters());
-    setActiveFilters(createInitialFilters());
-    setProjectPage((currentPage) => ({ ...currentPage, page: 0 }));
+    const nextFilters = createProjectFilters();
+    setFilters(nextFilters);
+    setSearchParams(buildProjectListSearchParams(nextFilters, 0));
   }
 
   function handleRetry() {
@@ -160,17 +176,13 @@ function ProjectsPage() {
   }
 
   function goToPreviousPage() {
-    setProjectPage((currentPage) => ({
-      ...currentPage,
-      page: Math.max(0, currentPage.page - 1),
-    }));
+    setSearchParams(
+      buildProjectListSearchParams(activeFilters, Math.max(0, projectPage.page - 1)),
+    );
   }
 
   function goToNextPage() {
-    setProjectPage((currentPage) => ({
-      ...currentPage,
-      page: currentPage.page + 1,
-    }));
+    setSearchParams(buildProjectListSearchParams(activeFilters, projectPage.page + 1));
   }
 
   const categoryOptions = [
