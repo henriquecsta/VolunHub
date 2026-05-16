@@ -4,6 +4,7 @@ import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { ROUTES, getDashboardPathByRole } from '../constants/routes';
 import { useAuth } from '../hooks/useAuth';
+import { hasValidationErrors, validateLoginForm } from '../utils/authValidation';
 import { getErrorMessage } from '../utils/http';
 
 function LoginPage() {
@@ -15,6 +16,7 @@ function LoginPage() {
     senha: '',
   });
   const [errorMessage, setErrorMessage] = useState('');
+  const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -26,11 +28,31 @@ function LoginPage() {
   function handleChange(event) {
     const { name, value } = event.target;
     setForm((currentForm) => ({ ...currentForm, [name]: value }));
+    setFormErrors((currentErrors) => {
+      const nextErrors = { ...currentErrors };
+      delete nextErrors[name];
+      return nextErrors;
+    });
+    setErrorMessage('');
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
+
     setErrorMessage('');
+
+    const validationErrors = validateLoginForm(form);
+    setFormErrors(validationErrors);
+
+    if (hasValidationErrors(validationErrors)) {
+      setErrorMessage('Revise os campos destacados.');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -51,7 +73,7 @@ function LoginPage() {
       <div className="space-y-2">
         <p className="text-sm font-semibold uppercase tracking-[0.16em] text-clay-700">Acesso</p>
         <h2 className="font-display text-3xl font-semibold text-ink-900">Entrar no VolunHub</h2>
-        <p className="text-slate-600">Conectado ao endpoint `POST /auth/login` para autenticar e persistir o JWT.</p>
+        <p className="text-slate-600">Acesse sua conta para acompanhar projetos, inscricoes e acoes da sua organizacao.</p>
       </div>
 
       {location.state?.registered ? (
@@ -66,11 +88,14 @@ function LoginPage() {
         </div>
       ) : null}
 
-      <form className="space-y-4" onSubmit={handleSubmit}>
+      <form className="space-y-4" noValidate onSubmit={handleSubmit}>
         <Input
           autoComplete="email"
+          disabled={isSubmitting}
+          error={formErrors.email}
           id="email"
           label="Email"
+          maxLength={150}
           name="email"
           onChange={handleChange}
           placeholder="voce@exemplo.com"
@@ -80,8 +105,12 @@ function LoginPage() {
         />
         <Input
           autoComplete="current-password"
+          disabled={isSubmitting}
+          error={formErrors.senha}
           id="senha"
           label="Senha"
+          maxLength={100}
+          minLength={6}
           name="senha"
           onChange={handleChange}
           placeholder="Digite sua senha"

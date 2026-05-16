@@ -2,18 +2,9 @@ import { createContext, useEffect, useState } from 'react';
 import { AUTH_EXPIRED_EVENT, USER_ROLES } from '../constants/auth';
 import * as authService from '../services/authService';
 import { clearStoredAuth, getStoredAuth, setStoredAuth } from '../utils/authStorage';
+import { createAuthSession } from '../utils/authSession';
 
 export const AuthContext = createContext(null);
-
-function normalizeAuthPayload(payload) {
-  return {
-    token: payload.token,
-    tokenType: payload.tipo,
-    expiresIn: payload.expiresIn,
-    email: payload.email,
-    profile: payload.perfil,
-  };
-}
 
 export function AuthProvider({ children }) {
   const [auth, setAuth] = useState(() => getStoredAuth());
@@ -31,14 +22,39 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!auth?.expiresAt) {
+      return undefined;
+    }
+
+    const remainingTime = Number(auth.expiresAt) - Date.now();
+
+    if (remainingTime <= 0) {
+      clearStoredAuth();
+      setAuth(null);
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      clearStoredAuth();
+      setAuth(null);
+    }, Math.min(remainingTime, 2147483647));
+
+    return () => window.clearTimeout(timeoutId);
+  }, [auth?.expiresAt]);
+
   async function signIn(credentials) {
     const response = await authService.login(credentials);
-    const normalizedAuth = normalizeAuthPayload(response);
+    const normalizedAuth = createAuthSession(response);
+    const storedAuth = setStoredAuth(normalizedAuth);
 
-    setStoredAuth(normalizedAuth);
-    setAuth(normalizedAuth);
+    if (!storedAuth) {
+      throw new Error('Nao foi possivel validar a sessao retornada pelo servidor.');
+    }
 
-    return normalizedAuth;
+    setAuth(storedAuth);
+
+    return storedAuth;
   }
 
   async function signUp(payload) {
@@ -50,12 +66,16 @@ export function AuthProvider({ children }) {
     setAuth(null);
   }
 
-  const profile = auth?.profile ?? null;
+  const user = auth?.user ?? null;
+  const profile = user?.perfil ?? auth?.profile ?? null;
+  const email = user?.email ?? auth?.email ?? null;
 
   const value = {
     auth,
+    user,
     profile,
-    email: auth?.email ?? null,
+    email,
+    idUsuario: user?.idUsuario ?? null,
     token: auth?.token ?? null,
     isAuthenticated: Boolean(auth?.token),
     isVolunteer: profile === USER_ROLES.VOLUNTARIO,
