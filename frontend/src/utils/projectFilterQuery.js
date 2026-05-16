@@ -78,6 +78,10 @@ export function areProjectFiltersEqual(firstFilters, secondFilters) {
   );
 }
 
+export function hasProjectFiltersApplied(filters, page = 0) {
+  return !areProjectFiltersEqual(filters, DEFAULT_PROJECT_FILTERS) || page > 0;
+}
+
 function normalizeText(value) {
   return String(value ?? '').trim();
 }

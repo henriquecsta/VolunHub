@@ -18,6 +18,7 @@ import {
   areProjectFiltersEqual,
   buildProjectListSearchParams,
   createProjectFilters,
+  hasProjectFiltersApplied,
   parseProjectListQuery,
 } from '../utils/projectFilterQuery';
 
@@ -96,6 +97,18 @@ function ProjectsPage() {
       shouldIgnore = true;
     };
   }, []);
+
+  useEffect(() => {
+    if (filters.termo === activeFilters.termo) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setSearchParams(buildProjectListSearchParams(filters, 0), { replace: true });
+    }, 450);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [activeFilters.termo, filters, setSearchParams]);
 
   useEffect(() => {
     let shouldIgnore = false;
@@ -196,13 +209,14 @@ function ProjectsPage() {
     value: option.value,
     label: `${option.label}s`,
   }));
+  const canClearFilters = hasProjectFiltersApplied(filters, projectPage.page);
 
   return (
     <div className="space-y-8">
       <PageSection
         eyebrow="Projetos"
-        title="Uma listagem conectada ao backend para explorar projetos reais do VolunHub."
-        description="A tela agora consome `GET /projetos`, trata carregamento e erro, e ja nasce preparada para evoluir com filtros e paginacao mais completos."
+        title="Encontre oportunidades alinhadas ao seu perfil."
+        description="Busque por tema, filtre por categoria e acompanhe projetos ativos, encerrados ou cancelados."
         actions={<Button to={ROUTES.LOGIN} variant="ghost">Entrar para se inscrever</Button>}
       >
         <form
@@ -214,7 +228,7 @@ function ProjectsPage() {
             label="Busca rapida"
             name="termo"
             onChange={updateField}
-            placeholder="Busque por titulo ou descricao"
+            placeholder="Titulo, descricao ou causa"
             value={filters.termo}
           />
           <Input
@@ -249,6 +263,7 @@ function ProjectsPage() {
             </Button>
             <Button
               className="w-full lg:w-auto"
+              disabled={!canClearFilters}
               onClick={handleResetFilters}
               type="button"
               variant="ghost"
@@ -262,7 +277,7 @@ function ProjectsPage() {
       {isLoading && !projectPage.items.length ? (
         <div className="space-y-6">
           <PageLoader
-            description="Consultando o endpoint `GET /projetos` e preparando a paginacao da listagem."
+            description="Buscando oportunidades disponiveis para a listagem publica."
             title="Carregando projetos"
           />
           <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -293,7 +308,10 @@ function ProjectsPage() {
       {!errorMessage && projectPage.items.length ? (
         <>
           {isLoading ? (
-            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+            <div
+              className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+              role="status"
+            >
               Atualizando resultados...
             </div>
           ) : null}
