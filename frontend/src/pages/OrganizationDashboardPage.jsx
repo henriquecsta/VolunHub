@@ -9,7 +9,7 @@ import PageSection from '../components/ui/PageSection';
 import { ROUTES } from '../constants/routes';
 import { useAuth } from '../hooks/useAuth';
 import { atualizarStatusInscricao, listarInscricoesDoProjeto } from '../services/inscricaoService';
-import { listarProjetosDaOrganizacao } from '../services/projetoService';
+import { excluirProjeto, listarProjetosDaOrganizacao } from '../services/projetoService';
 import { getErrorMessage } from '../utils/http';
 
 function OrganizationDashboardPage() {
@@ -22,6 +22,9 @@ function OrganizationDashboardPage() {
   const [actionInProgress, setActionInProgress] = useState(null);
   const [actionErrorMessage, setActionErrorMessage] = useState('');
   const [actionSuccessMessage, setActionSuccessMessage] = useState('');
+  const [projectActionsById, setProjectActionsById] = useState({});
+  const [projectActionErrorMessage, setProjectActionErrorMessage] = useState('');
+  const [projectActionSuccessMessage, setProjectActionSuccessMessage] = useState('');
   const [refreshCount, setRefreshCount] = useState(0);
 
   useEffect(() => {
@@ -32,6 +35,8 @@ function OrganizationDashboardPage() {
       setErrorMessage('');
       setActionErrorMessage('');
       setActionSuccessMessage('');
+      setProjectActionErrorMessage('');
+      setProjectActionSuccessMessage('');
 
       try {
         const organizationProjects = await listarProjetosDaOrganizacao(idUsuario);
@@ -87,6 +92,60 @@ function OrganizationDashboardPage() {
 
   function handleRefresh() {
     setRefreshCount((currentCount) => currentCount + 1);
+  }
+
+  async function handleDeleteProject(project) {
+    if (!project?.id || projectActionsById[project.id]) {
+      return;
+    }
+
+    if (!canManageProject(project, idUsuario)) {
+      setProjectActionErrorMessage('Voce so pode excluir projetos criados pela sua organizacao.');
+      setProjectActionSuccessMessage('');
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Excluir o projeto "${project.title}"? Esta acao nao pode ser desfeita.`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setProjectActionsById((currentActions) => ({
+      ...currentActions,
+      [project.id]: { type: 'delete' },
+    }));
+    setProjectActionErrorMessage('');
+    setProjectActionSuccessMessage('');
+
+    try {
+      await excluirProjeto(project.id);
+
+      setProjects((currentProjects) =>
+        currentProjects.filter((currentProject) => currentProject.id !== project.id),
+      );
+      setSubscriptions((currentSubscriptions) =>
+        currentSubscriptions.filter((subscription) => subscription.projectId !== project.id),
+      );
+      setSubscriptionsByProjectId((currentSubscriptionsByProjectId) => {
+        const nextSubscriptionsByProjectId = { ...currentSubscriptionsByProjectId };
+        delete nextSubscriptionsByProjectId[project.id];
+        return nextSubscriptionsByProjectId;
+      });
+      setProjectActionSuccessMessage('Projeto excluido com sucesso.');
+    } catch (error) {
+      setProjectActionErrorMessage(
+        getErrorMessage(error, 'Nao foi possivel excluir este projeto.'),
+      );
+    } finally {
+      setProjectActionsById((currentActions) => {
+        const nextActions = { ...currentActions };
+        delete nextActions[project.id];
+        return nextActions;
+      });
+    }
   }
 
   async function handleUpdateSubscriptionStatus(subscription, status) {
@@ -207,10 +266,22 @@ function OrganizationDashboardPage() {
       {!errorMessage && hasProjects ? (
         <section className="space-y-4">
           <h2 className="font-display text-2xl font-semibold text-ink-900">Projetos publicados</h2>
+          {projectActionSuccessMessage ? (
+            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+              {projectActionSuccessMessage}
+            </div>
+          ) : null}
+          {projectActionErrorMessage ? (
+            <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {projectActionErrorMessage}
+            </div>
+          ) : null}
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {projects.map((project) => (
               <OrganizationProjectCard
+                actionState={projectActionsById[project.id]}
                 key={project.id}
+                onDelete={handleDeleteProject}
                 project={project}
                 subscriptionCount={subscriptionsByProjectId[project.id]?.length ?? 0}
               />
@@ -257,6 +328,10 @@ function OrganizationDashboardPage() {
       ) : null}
     </div>
   );
+}
+
+function canManageProject(project, idUsuario) {
+  return Number(project?.organizationId) === Number(idUsuario);
 }
 
 function getSubscriptionActions({ actionInProgress, onUpdateStatus, subscription }) {

@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
 import { getOrganizationProjectEditPath, getProjectDetailPath } from '../../constants/routes';
+import Button from '../ui/Button';
 
 const projectStatusClassNames = {
   ATIVO: 'bg-emerald-100 text-emerald-700',
@@ -7,8 +7,10 @@ const projectStatusClassNames = {
   ENCERRADO: 'bg-slate-100 text-slate-600',
 };
 
-function OrganizationProjectCard({ project, subscriptionCount }) {
+function OrganizationProjectCard({ actionState, onDelete, project, subscriptionCount }) {
   const statusClassName = projectStatusClassNames[project.status] ?? 'bg-mist-100 text-slate-600';
+  const isDeleting = actionState?.type === 'delete';
+  const isActionRunning = Boolean(actionState);
 
   return (
     <article className="surface-card flex h-full flex-col justify-between p-6">
@@ -30,18 +32,22 @@ function OrganizationProjectCard({ project, subscriptionCount }) {
         <p>{project.city}, {project.state}</p>
         <p>{project.dateRangeLabel}</p>
         <p>{subscriptionCount} inscricoes recebidas</p>
-        <Link
-          className="inline-flex items-center justify-center rounded-full border border-mist-300 px-4 py-2 font-semibold text-ink-900 hover:border-forest-500 hover:text-forest-600"
-          to={getProjectDetailPath(project.id)}
-        >
+        <Button size="sm" to={getProjectDetailPath(project.id)} variant="ghost">
           Ver projeto
-        </Link>
-        <Link
-          className="inline-flex items-center justify-center rounded-full bg-forest-500 px-4 py-2 font-semibold text-white hover:bg-forest-600"
-          to={getOrganizationProjectEditPath(project.id)}
-        >
+        </Button>
+        <Button size="sm" to={getOrganizationProjectEditPath(project.id)} variant="secondary">
           Editar
-        </Link>
+        </Button>
+        {onDelete ? (
+          <Button
+            disabled={isActionRunning}
+            onClick={() => onDelete(project)}
+            size="sm"
+            variant="outline"
+          >
+            {isDeleting ? 'Excluindo...' : 'Excluir'}
+          </Button>
+        ) : null}
       </div>
     </article>
   );

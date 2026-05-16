@@ -117,6 +117,10 @@ export async function atualizarProjeto(idProjeto, payload) {
   return adaptProjeto(response.data);
 }
 
+export async function excluirProjeto(idProjeto) {
+  await api.delete(`/projetos/${normalizeProjectId(idProjeto)}`);
+}
+
 export async function listarProjetosDaOrganizacao(idOrganizacao) {
   const normalizedOrganizationId = Number(idOrganizacao);
 
@@ -186,7 +190,7 @@ function normalizeProjectId(idProjeto) {
   const normalizedId = Number(idProjeto);
 
   if (!Number.isInteger(normalizedId) || normalizedId <= 0) {
-    throw new Error('Projeto invalido para atualizacao.');
+    throw new Error('Projeto invalido.');
   }
 
   return normalizedId;
