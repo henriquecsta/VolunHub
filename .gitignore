@@ -34,6 +34,7 @@ coverage/
 .env.*
 .tools/
 .local-mariadb/
+.m2/
 
 # IDE / editor
 .vscode/
