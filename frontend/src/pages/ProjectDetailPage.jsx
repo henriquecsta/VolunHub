@@ -1,24 +1,27 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import PageLoader from '../components/feedback/PageLoader';
 import StatusPanel from '../components/feedback/StatusPanel';
 import Button from '../components/ui/Button';
 import PageSection from '../components/ui/PageSection';
 import { ROUTES } from '../constants/routes';
 import { useAuth } from '../hooks/useAuth';
-import { inscreverEmProjeto } from '../services/inscricaoService';
+import { buscarMinhaInscricaoNoProjeto, inscreverEmProjeto } from '../services/inscricaoService';
 import { buscarProjetoPorId } from '../services/projetoService';
 import { getErrorMessage } from '../utils/http';
 
 function ProjectDetailPage() {
   const { projectId } = useParams();
-  const { isAuthenticated, isVolunteer } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated, isOrganization, isVolunteer, token } = useAuth();
   const [project, setProject] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [notFound, setNotFound] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [subscription, setSubscription] = useState(null);
+  const [isSubscriptionChecking, setIsSubscriptionChecking] = useState(false);
   const [isSubscriptionSubmitting, setIsSubscriptionSubmitting] = useState(false);
   const [subscriptionSuccessMessage, setSubscriptionSuccessMessage] = useState('');
   const [subscriptionErrorMessage, setSubscriptionErrorMessage] = useState('');
@@ -38,6 +41,9 @@ function ProjectDetailPage() {
       setIsLoading(true);
       setErrorMessage('');
       setNotFound(false);
+      setSubscription(null);
+      setSubscriptionSuccessMessage('');
+      setSubscriptionErrorMessage('');
 
       try {
         const response = await buscarProjetoPorId(projectId);
@@ -78,12 +84,69 @@ function ProjectDetailPage() {
     };
   }, [projectId, retryCount]);
 
+  useEffect(() => {
+    let shouldIgnore = false;
+
+    async function loadCurrentSubscription() {
+      if (!project?.id || !isAuthenticated || !isVolunteer || !token) {
+        setSubscription(null);
+        setIsSubscriptionChecking(false);
+        return;
+      }
+
+      setIsSubscriptionChecking(true);
+      setSubscriptionErrorMessage('');
+
+      try {
+        const response = await buscarMinhaInscricaoNoProjeto(project.id);
+
+        if (!shouldIgnore) {
+          setSubscription(response);
+        }
+      } catch (error) {
+        if (!shouldIgnore && error?.response?.status !== 401) {
+          setSubscriptionErrorMessage(
+            getErrorMessage(error, 'Nao foi possivel verificar sua inscricao neste projeto.'),
+          );
+        }
+      } finally {
+        if (!shouldIgnore) {
+          setIsSubscriptionChecking(false);
+        }
+      }
+    }
+
+    loadCurrentSubscription();
+
+    return () => {
+      shouldIgnore = true;
+    };
+  }, [isAuthenticated, isVolunteer, project?.id, token]);
+
   function handleRetry() {
     setRetryCount((currentCount) => currentCount + 1);
   }
 
+  function handleLoginRedirect() {
+    navigate(ROUTES.LOGIN, {
+      state: { from: location },
+    });
+  }
+
   async function handleSubscribe() {
-    if (!project?.id || !isAuthenticated || !isVolunteer || isSubscriptionSubmitting || subscription) {
+    if (!isAuthenticated || !token) {
+      handleLoginRedirect();
+      return;
+    }
+
+    if (
+      !project?.id ||
+      !isVolunteer ||
+      project.status !== 'ATIVO' ||
+      isSubscriptionChecking ||
+      isSubscriptionSubmitting ||
+      subscription
+    ) {
       return;
     }
 
@@ -97,9 +160,25 @@ function ProjectDetailPage() {
       setSubscription(response);
       setSubscriptionSuccessMessage('Inscricao enviada. Agora e so aguardar a avaliacao da organizacao.');
     } catch (error) {
-      setSubscriptionErrorMessage(
-        getErrorMessage(error, 'Nao foi possivel realizar sua inscricao neste projeto.'),
-      );
+      const message = getErrorMessage(error, 'Nao foi possivel realizar sua inscricao neste projeto.');
+
+      if (isDuplicateSubscriptionError(error, message)) {
+        setSubscription({
+          id: null,
+          projectId: project.id,
+          projectTitle: project.title,
+          status: 'PENDENTE',
+          statusLabel: 'Pendente',
+        });
+        return;
+      }
+
+      if (error?.response?.status === 401) {
+        handleLoginRedirect();
+        return;
+      }
+
+      setSubscriptionErrorMessage(message);
     } finally {
       setIsSubscriptionSubmitting(false);
     }
@@ -156,16 +235,26 @@ function ProjectDetailPage() {
             <Button to={ROUTES.PROJECTS} variant="ghost">
               Voltar para lista
             </Button>
-            {isVolunteer ? (
+            {isOrganization ? null : isVolunteer ? (
               <Button
-                disabled={isSubscriptionSubmitting || Boolean(subscription)}
+                disabled={
+                  project.status !== 'ATIVO' ||
+                  isSubscriptionChecking ||
+                  isSubscriptionSubmitting ||
+                  Boolean(subscription)
+                }
                 onClick={handleSubscribe}
                 variant="secondary"
               >
-                {isSubscriptionSubmitting ? 'Enviando...' : subscription ? 'Inscrito' : 'Inscrever-se'}
+                {getSubscriptionButtonLabel({
+                  isSubscriptionChecking,
+                  isSubscriptionSubmitting,
+                  projectStatus: project.status,
+                  subscription,
+                })}
               </Button>
             ) : !isAuthenticated ? (
-              <Button to={ROUTES.LOGIN}>Entrar para participar</Button>
+              <Button onClick={handleLoginRedirect}>Entrar para participar</Button>
             ) : null}
           </>
         }
@@ -227,6 +316,38 @@ function ProjectDetailPage() {
         </article>
       </section>
     </div>
+  );
+}
+
+function getSubscriptionButtonLabel({
+  isSubscriptionChecking,
+  isSubscriptionSubmitting,
+  projectStatus,
+  subscription,
+}) {
+  if (projectStatus !== 'ATIVO') {
+    return 'Inscricoes indisponiveis';
+  }
+
+  if (isSubscriptionChecking) {
+    return 'Verificando...';
+  }
+
+  if (isSubscriptionSubmitting) {
+    return 'Enviando...';
+  }
+
+  if (subscription) {
+    return 'Ja inscrito';
+  }
+
+  return 'Inscrever-se';
+}
+
+function isDuplicateSubscriptionError(error, message) {
+  return (
+    error?.response?.status === 400 &&
+    message.toLowerCase().includes('ja esta inscrito')
   );
 }
 

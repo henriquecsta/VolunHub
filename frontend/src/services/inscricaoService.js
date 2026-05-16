@@ -33,3 +33,19 @@ export async function inscreverEmProjeto(idProjeto) {
 
   return adaptInscricao(response.data);
 }
+
+export async function listarMinhasInscricoes() {
+  const response = await api.get('/inscricoes/me');
+  const inscricoes = Array.isArray(response.data) ? response.data : [];
+
+  return inscricoes.map(adaptInscricao);
+}
+
+export async function buscarMinhaInscricaoNoProjeto(idProjeto) {
+  const normalizedProjectId = normalizeProjectId(idProjeto);
+  const inscricoes = await listarMinhasInscricoes();
+
+  return (
+    inscricoes.find((inscricao) => Number(inscricao.projectId) === normalizedProjectId) ?? null
+  );
+}
