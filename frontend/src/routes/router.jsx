@@ -2,10 +2,10 @@ import { createBrowserRouter } from 'react-router-dom';
 import { USER_ROLES } from '../constants/auth';
 import AppLayout from '../layouts/AppLayout';
 import AuthLayout from '../layouts/AuthLayout';
-import DashboardOrganizationPage from '../pages/DashboardOrganizationPage';
 import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
 import NotFoundPage from '../pages/NotFoundPage';
+import OrganizationDashboardPage from '../pages/OrganizationDashboardPage';
 import ProjectDetailPage from '../pages/ProjectDetailPage';
 import ProjectsPage from '../pages/ProjectsPage';
 import RegisterPage from '../pages/RegisterPage';
@@ -23,7 +23,7 @@ export const router = createBrowserRouter([
       { path: 'projetos/:projectId', element: <ProjectDetailPage /> },
       {
         element: <ProtectedRoute allowedRoles={[USER_ROLES.ORGANIZACAO]} />,
-        children: [{ path: 'dashboard/organizacao', element: <DashboardOrganizationPage /> }],
+        children: [{ path: 'dashboard/organizacao', element: <OrganizationDashboardPage /> }],
       },
       {
         element: <ProtectedRoute allowedRoles={[USER_ROLES.VOLUNTARIO]} />,
