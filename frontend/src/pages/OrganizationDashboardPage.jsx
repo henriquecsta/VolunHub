@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import StatCard from '../components/common/StatCard';
+import PageLoader from '../components/feedback/PageLoader';
+import StatusPanel from '../components/feedback/StatusPanel';
 import OrganizationProjectCard from '../components/organization/OrganizationProjectCard';
 import OrganizationSubscriptionCard from '../components/organization/OrganizationSubscriptionCard';
 import Button from '../components/ui/Button';
@@ -20,6 +22,7 @@ function OrganizationDashboardPage() {
   const [actionInProgress, setActionInProgress] = useState(null);
   const [actionErrorMessage, setActionErrorMessage] = useState('');
   const [actionSuccessMessage, setActionSuccessMessage] = useState('');
+  const [refreshCount, setRefreshCount] = useState(0);
 
   useEffect(() => {
     let shouldIgnore = false;
@@ -76,9 +79,15 @@ function OrganizationDashboardPage() {
     return () => {
       shouldIgnore = true;
     };
-  }, [idUsuario]);
+  }, [idUsuario, refreshCount]);
 
   const pendingCount = subscriptions.filter((subscription) => subscription.status === 'PENDENTE').length;
+  const hasProjects = projects.length > 0;
+  const hasSubscriptions = subscriptions.length > 0;
+
+  function handleRefresh() {
+    setRefreshCount((currentCount) => currentCount + 1);
+  }
 
   async function handleUpdateSubscriptionStatus(subscription, status) {
     if (!subscription?.id || subscription.status !== 'PENDENTE' || actionInProgress) {
@@ -129,7 +138,14 @@ function OrganizationDashboardPage() {
   return (
     <div className="space-y-8">
       <PageSection
-        actions={<Button to={ROUTES.PROJECTS}>Ver projetos</Button>}
+        actions={
+          <>
+            <Button disabled={isLoading} onClick={handleRefresh} variant="ghost">
+              {isLoading ? 'Atualizando...' : 'Atualizar'}
+            </Button>
+            <Button to={ROUTES.PROJECTS}>Ver projetos</Button>
+          </>
+        }
         description={`Sessao protegida para ${email}. Gerencie aqui os projetos publicados e as inscricoes recebidas.`}
         eyebrow="Dashboard organizacao"
         title="Um painel para acompanhar projetos e voluntarios interessados."
@@ -155,19 +171,37 @@ function OrganizationDashboardPage() {
         </div>
       </section>
 
-      {isLoading ? (
-        <p className="rounded-2xl border border-mist-300 bg-white/80 px-4 py-3 text-sm text-slate-600">
-          Carregando projetos e inscricoes recebidas...
-        </p>
+      {isLoading && !hasProjects && !hasSubscriptions ? (
+        <PageLoader
+          description="Consultando `GET /projetos` e `GET /inscricoes/projeto/{id}` para montar a visao da organizacao."
+          title="Carregando dashboard da organizacao"
+        />
+      ) : null}
+
+      {isLoading && (hasProjects || hasSubscriptions) ? (
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+          Atualizando projetos e inscricoes...
+        </div>
       ) : null}
 
       {!isLoading && errorMessage ? (
-        <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {errorMessage}
-        </p>
+        <StatusPanel
+          actions={<Button onClick={handleRefresh}>Tentar novamente</Button>}
+          description={errorMessage}
+          title="Nao foi possivel carregar o dashboard"
+          tone="error"
+        />
       ) : null}
 
-      {!isLoading && !errorMessage && projects.length ? (
+      {!isLoading && !errorMessage && !hasProjects ? (
+        <StatusPanel
+          actions={<Button to={ROUTES.PROJECTS}>Consultar projetos</Button>}
+          description="Ainda nao encontramos projetos vinculados a esta organizacao. Assim que houver projetos publicados, eles aparecem aqui."
+          title="Nenhum projeto publicado"
+        />
+      ) : null}
+
+      {!errorMessage && hasProjects ? (
         <section className="space-y-4">
           <h2 className="font-display text-2xl font-semibold text-ink-900">Projetos publicados</h2>
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -182,7 +216,15 @@ function OrganizationDashboardPage() {
         </section>
       ) : null}
 
-      {!isLoading && !errorMessage && subscriptions.length ? (
+      {!isLoading && !errorMessage && hasProjects && !hasSubscriptions ? (
+        <StatusPanel
+          actions={<Button onClick={handleRefresh}>Atualizar</Button>}
+          description="Seus projetos ainda nao receberam inscricoes de voluntarios."
+          title="Nenhuma inscricao recebida"
+        />
+      ) : null}
+
+      {!errorMessage && hasSubscriptions ? (
         <section className="space-y-4">
           <h2 className="font-display text-2xl font-semibold text-ink-900">Inscricoes recebidas</h2>
           {actionSuccessMessage ? (
