@@ -28,7 +28,10 @@ api.interceptors.response.use(
 
     if (isUnauthorized && !isAuthRequest) {
       clearStoredAuth();
-      window.dispatchEvent(new CustomEvent(AUTH_EXPIRED_EVENT));
+
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent(AUTH_EXPIRED_EVENT, { detail: { status: 401 } }));
+      }
     }
 
     return Promise.reject(error);
