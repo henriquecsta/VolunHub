@@ -45,6 +45,13 @@ export async function listarMinhasInscricoes() {
   return inscricoes.map(adaptInscricao);
 }
 
+export async function listarInscricoesDoProjeto(idProjeto) {
+  const response = await api.get(`/inscricoes/projeto/${normalizeProjectId(idProjeto)}`);
+  const inscricoes = Array.isArray(response.data) ? response.data : [];
+
+  return inscricoes.map(adaptInscricao);
+}
+
 export async function listarMinhasInscricoesComProjetos() {
   const inscricoes = await listarMinhasInscricoes();
 

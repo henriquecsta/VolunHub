@@ -3,6 +3,8 @@ import { formatDateRange, formatEnumLabel, truncateText } from '../utils/formatt
 
 const DEFAULT_PAGE = 0;
 const DEFAULT_SIZE = 6;
+const ORGANIZATION_PROJECT_STATUSES = ['ATIVO', 'ENCERRADO', 'CANCELADO'];
+const ORGANIZATION_PROJECT_PAGE_SIZE = 100;
 
 function normalizeText(value) {
   if (value === null || value === undefined) {
@@ -103,4 +105,49 @@ export async function listarProjetos({ page, size, termo, categoria, local, stat
 export async function buscarProjetoPorId(id) {
   const response = await api.get(`/projetos/${id}`);
   return adaptProjeto(response.data);
+}
+
+export async function listarProjetosDaOrganizacao(idOrganizacao) {
+  const normalizedOrganizationId = Number(idOrganizacao);
+
+  if (!Number.isInteger(normalizedOrganizationId) || normalizedOrganizationId <= 0) {
+    return [];
+  }
+
+  const projectPagesByStatus = await Promise.all(
+    ORGANIZATION_PROJECT_STATUSES.map((status) => listarTodosProjetosPorStatus(status)),
+  );
+  const projectsById = new Map();
+
+  projectPagesByStatus.flat().forEach((project) => {
+    if (Number(project.organizationId) === normalizedOrganizationId) {
+      projectsById.set(project.id, project);
+    }
+  });
+
+  return Array.from(projectsById.values()).sort(compareProjectsByDate);
+}
+
+async function listarTodosProjetosPorStatus(status) {
+  const projects = [];
+  let page = 0;
+  let isLastPage = false;
+
+  while (!isLastPage) {
+    const response = await listarProjetos({
+      page,
+      size: ORGANIZATION_PROJECT_PAGE_SIZE,
+      status,
+    });
+
+    projects.push(...response.items);
+    isLastPage = response.isLast || response.items.length === 0;
+    page += 1;
+  }
+
+  return projects;
+}
+
+function compareProjectsByDate(firstProject, secondProject) {
+  return String(secondProject.startDate ?? '').localeCompare(String(firstProject.startDate ?? ''));
 }
