@@ -18,6 +18,8 @@ Este diretório contém a documentação técnica inicial do projeto VolunHub.
 12. [Critérios de Aceite](12-criterios-aceite.md)
 13. [Glossário](13-glossario.md)
 14. [Filtros de Busca](14-filtros-busca.md)
+15. [Validacao Final](15-validacao-final.md)
+16. [Resumo da Entrega Final](resumo-entrega-final.md)
 
 ## Uso
 Navegue pelos documentos para entender o escopo, arquitetura, modelos de dados e planos de implementação do VolunHub.
