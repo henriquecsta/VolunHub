@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import StatCard from '../components/common/StatCard';
+import PageLoader from '../components/feedback/PageLoader';
+import StatusPanel from '../components/feedback/StatusPanel';
 import VolunteerSubscriptionCard from '../components/subscriptions/VolunteerSubscriptionCard';
 import Button from '../components/ui/Button';
 import PageSection from '../components/ui/PageSection';
@@ -13,6 +15,7 @@ function VolunteerDashboardPage() {
   const [subscriptions, setSubscriptions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [refreshCount, setRefreshCount] = useState(0);
 
   useEffect(() => {
     let shouldIgnore = false;
@@ -46,10 +49,15 @@ function VolunteerDashboardPage() {
     return () => {
       shouldIgnore = true;
     };
-  }, []);
+  }, [refreshCount]);
 
   const pendingCount = subscriptions.filter((subscription) => subscription.status === 'PENDENTE').length;
   const approvedCount = subscriptions.filter((subscription) => subscription.status === 'APROVADA').length;
+  const hasSubscriptions = subscriptions.length > 0;
+
+  function handleRefresh() {
+    setRefreshCount((currentCount) => currentCount + 1);
+  }
 
   return (
     <div className="space-y-8">
@@ -74,25 +82,48 @@ function VolunteerDashboardPage() {
               Acompanhe seus projetos inscritos e consulte os detalhes quando quiser.
             </p>
           </div>
-          <Button to={ROUTES.PROJECTS} variant="ghost">
-            Buscar projetos
-          </Button>
+          <div className="flex flex-wrap gap-3">
+            <Button disabled={isLoading} onClick={handleRefresh} variant="ghost">
+              {isLoading ? 'Atualizando...' : 'Atualizar'}
+            </Button>
+            <Button to={ROUTES.PROJECTS} variant="ghost">
+              Buscar projetos
+            </Button>
+          </div>
         </div>
       </section>
 
-      {isLoading ? (
-        <p className="rounded-2xl border border-mist-300 bg-white/80 px-4 py-3 text-sm text-slate-600">
-          Carregando suas inscricoes...
-        </p>
+      {isLoading && !hasSubscriptions ? (
+        <PageLoader
+          description="Consultando `GET /inscricoes/me` e preparando seus cards de acompanhamento."
+          title="Carregando suas inscricoes"
+        />
+      ) : null}
+
+      {isLoading && hasSubscriptions ? (
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+          Atualizando suas inscricoes...
+        </div>
       ) : null}
 
       {!isLoading && errorMessage ? (
-        <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {errorMessage}
-        </p>
+        <StatusPanel
+          actions={<Button onClick={handleRefresh}>Tentar novamente</Button>}
+          description={errorMessage}
+          title="Nao foi possivel carregar suas inscricoes"
+          tone="error"
+        />
       ) : null}
 
-      {!isLoading && !errorMessage && subscriptions.length ? (
+      {!isLoading && !errorMessage && !hasSubscriptions ? (
+        <StatusPanel
+          actions={<Button to={ROUTES.PROJECTS}>Explorar projetos</Button>}
+          description="Voce ainda nao possui inscricoes. Explore oportunidades ativas e escolha um projeto para participar."
+          title="Voce ainda nao possui inscricoes"
+        />
+      ) : null}
+
+      {!errorMessage && hasSubscriptions ? (
         <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {subscriptions.map((subscription) => (
             <VolunteerSubscriptionCard key={subscription.id} subscription={subscription} />
