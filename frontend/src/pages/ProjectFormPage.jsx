@@ -1,10 +1,13 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import PageSection from '../components/ui/PageSection';
 import Select from '../components/ui/Select';
 import Textarea from '../components/ui/Textarea';
 import { ROUTES } from '../constants/routes';
+import { criarProjeto } from '../services/projetoService';
+import { getErrorMessage } from '../utils/http';
 
 const PARTICIPATION_OPTIONS = [
   { value: 'PRESENCIAL', label: 'Presencial' },
@@ -33,13 +36,19 @@ const INITIAL_FORM = {
 };
 
 function ProjectFormPage() {
+  const navigate = useNavigate();
   const [form, setForm] = useState(() => ({ ...INITIAL_FORM }));
   const [formErrors, setFormErrors] = useState({});
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   function handleChange(event) {
     const { name, value } = event.target;
 
     setForm((currentForm) => ({ ...currentForm, [name]: value }));
+    setErrorMessage('');
+    setSuccessMessage('');
     setFormErrors((currentErrors) => {
       const nextErrors = { ...currentErrors };
       delete nextErrors[name];
@@ -47,10 +56,37 @@ function ProjectFormPage() {
     });
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
-    setFormErrors(validateProjectForm(form));
+    if (isSubmitting) {
+      return;
+    }
+
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    const validationErrors = validateProjectForm(form);
+    setFormErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length) {
+      setErrorMessage('Revise os campos destacados.');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      await criarProjeto(form);
+      setSuccessMessage('Projeto criado com sucesso.');
+      window.setTimeout(() => {
+        navigate(ROUTES.DASHBOARD_ORGANIZATION, { replace: true });
+      }, 700);
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error, 'Nao foi possivel salvar este projeto.'));
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -62,10 +98,23 @@ function ProjectFormPage() {
         title="Novo projeto"
       />
 
+      {successMessage ? (
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+          {successMessage}
+        </div>
+      ) : null}
+
+      {errorMessage ? (
+        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {errorMessage}
+        </div>
+      ) : null}
+
       <form className="surface-card space-y-6 p-6 sm:p-8" noValidate onSubmit={handleSubmit}>
         <div className="grid gap-5 lg:grid-cols-2">
           <Input
             error={formErrors.titulo}
+            disabled={isSubmitting}
             id="titulo"
             label="Titulo"
             maxLength={150}
@@ -77,6 +126,7 @@ function ProjectFormPage() {
           />
           <Input
             error={formErrors.idCategoria}
+            disabled={isSubmitting}
             id="idCategoria"
             label="Categoria"
             min={1}
@@ -91,6 +141,7 @@ function ProjectFormPage() {
 
         <Textarea
           error={formErrors.descricao}
+          disabled={isSubmitting}
           id="descricao"
           label="Descricao"
           name="descricao"
@@ -103,6 +154,7 @@ function ProjectFormPage() {
         <div className="grid gap-5 lg:grid-cols-[1fr_1fr_120px]">
           <Input
             error={formErrors.local}
+            disabled={isSubmitting}
             id="local"
             label="Local"
             maxLength={255}
@@ -114,6 +166,7 @@ function ProjectFormPage() {
           />
           <Input
             error={formErrors.cidade}
+            disabled={isSubmitting}
             id="cidade"
             label="Cidade"
             maxLength={100}
@@ -125,6 +178,7 @@ function ProjectFormPage() {
           />
           <Input
             error={formErrors.estado}
+            disabled={isSubmitting}
             id="estado"
             label="UF"
             maxLength={2}
@@ -139,6 +193,7 @@ function ProjectFormPage() {
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-5">
           <Select
             error={formErrors.tipoParticipacao}
+            disabled={isSubmitting}
             id="tipoParticipacao"
             label="Tipo"
             name="tipoParticipacao"
@@ -148,6 +203,7 @@ function ProjectFormPage() {
           />
           <Input
             error={formErrors.dataInicio}
+            disabled={isSubmitting}
             id="dataInicio"
             label="Data inicio"
             name="dataInicio"
@@ -158,6 +214,7 @@ function ProjectFormPage() {
           />
           <Input
             error={formErrors.dataFim}
+            disabled={isSubmitting}
             id="dataFim"
             label="Data fim"
             name="dataFim"
@@ -168,6 +225,7 @@ function ProjectFormPage() {
           />
           <Input
             error={formErrors.vagas}
+            disabled={isSubmitting}
             id="vagas"
             label="Vagas"
             min={1}
@@ -179,6 +237,7 @@ function ProjectFormPage() {
           />
           <Select
             error={formErrors.status}
+            disabled={isSubmitting}
             id="status"
             label="Status"
             name="status"
@@ -192,8 +251,8 @@ function ProjectFormPage() {
           <Button to={ROUTES.DASHBOARD_ORGANIZATION} type="button" variant="ghost">
             Cancelar
           </Button>
-          <Button type="submit" variant="secondary">
-            Salvar projeto
+          <Button disabled={isSubmitting} type="submit" variant="secondary">
+            {isSubmitting ? 'Salvando...' : 'Salvar projeto'}
           </Button>
         </div>
       </form>

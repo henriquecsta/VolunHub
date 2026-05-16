@@ -143,6 +143,9 @@ function OrganizationDashboardPage() {
             <Button disabled={isLoading} onClick={handleRefresh} variant="ghost">
               {isLoading ? 'Atualizando...' : 'Atualizar'}
             </Button>
+            <Button to={ROUTES.ORGANIZATION_PROJECT_NEW} variant="secondary">
+              Novo projeto
+            </Button>
             <Button to={ROUTES.PROJECTS}>Ver projetos</Button>
           </>
         }

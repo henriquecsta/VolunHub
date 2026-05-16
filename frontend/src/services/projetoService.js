@@ -107,6 +107,11 @@ export async function buscarProjetoPorId(id) {
   return adaptProjeto(response.data);
 }
 
+export async function criarProjeto(payload) {
+  const response = await api.post('/projetos', buildProjetoPayload(payload));
+  return adaptProjeto(response.data);
+}
+
 export async function listarProjetosDaOrganizacao(idOrganizacao) {
   const normalizedOrganizationId = Number(idOrganizacao);
 
@@ -150,4 +155,24 @@ async function listarTodosProjetosPorStatus(status) {
 
 function compareProjectsByDate(firstProject, secondProject) {
   return String(secondProject.startDate ?? '').localeCompare(String(firstProject.startDate ?? ''));
+}
+
+function buildProjetoPayload(payload) {
+  return {
+    titulo: normalizeRequiredText(payload.titulo),
+    descricao: normalizeRequiredText(payload.descricao),
+    cidade: normalizeRequiredText(payload.cidade),
+    estado: normalizeRequiredText(payload.estado).toUpperCase(),
+    local: normalizeRequiredText(payload.local),
+    tipoParticipacao: payload.tipoParticipacao,
+    dataInicio: payload.dataInicio,
+    dataFim: payload.dataFim,
+    vagas: Number(payload.vagas),
+    status: payload.status,
+    idCategoria: Number(payload.idCategoria),
+  };
+}
+
+function normalizeRequiredText(value) {
+  return String(value ?? '').trim();
 }
