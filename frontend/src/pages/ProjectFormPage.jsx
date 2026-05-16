@@ -9,6 +9,7 @@ import Select from '../components/ui/Select';
 import Textarea from '../components/ui/Textarea';
 import { ROUTES } from '../constants/routes';
 import { useAuth } from '../hooks/useAuth';
+import { listarCategorias } from '../services/categoriaService';
 import { atualizarProjeto, buscarProjetoPorId, criarProjeto } from '../services/projetoService';
 import { getErrorMessage } from '../utils/http';
 
@@ -50,6 +51,44 @@ function ProjectFormPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingProject, setIsLoadingProject] = useState(isEditMode);
   const [loadErrorMessage, setLoadErrorMessage] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+  const [categoriesErrorMessage, setCategoriesErrorMessage] = useState('');
+  const [categoriesRetryCount, setCategoriesRetryCount] = useState(0);
+
+  useEffect(() => {
+    let shouldIgnore = false;
+
+    async function loadCategories() {
+      setIsLoadingCategories(true);
+      setCategoriesErrorMessage('');
+
+      try {
+        const response = await listarCategorias();
+
+        if (!shouldIgnore) {
+          setCategories(response);
+        }
+      } catch (error) {
+        if (!shouldIgnore) {
+          setCategories([]);
+          setCategoriesErrorMessage(
+            getErrorMessage(error, 'Nao foi possivel carregar as categorias.'),
+          );
+        }
+      } finally {
+        if (!shouldIgnore) {
+          setIsLoadingCategories(false);
+        }
+      }
+    }
+
+    loadCategories();
+
+    return () => {
+      shouldIgnore = true;
+    };
+  }, [categoriesRetryCount]);
 
   useEffect(() => {
     let shouldIgnore = false;
@@ -152,30 +191,44 @@ function ProjectFormPage() {
     }
   }
 
-  if (isLoadingProject) {
+  if (isLoadingProject || isLoadingCategories) {
     return (
       <PageLoader
-        description="Buscando dados do projeto para preencher o formulario."
-        title="Carregando projeto"
+        description="Buscando dados necessarios para montar o formulario."
+        title={isEditMode ? 'Carregando projeto' : 'Carregando formulario'}
       />
     );
   }
 
-  if (loadErrorMessage) {
+  if (loadErrorMessage || categoriesErrorMessage) {
     return (
       <StatusPanel
         actions={
           <>
             <Button to={ROUTES.DASHBOARD_ORGANIZATION}>Voltar ao dashboard</Button>
-            <Button to={ROUTES.PROJECTS} variant="ghost">Ver projetos</Button>
+            {categoriesErrorMessage ? (
+              <Button onClick={() => setCategoriesRetryCount((currentCount) => currentCount + 1)} variant="ghost">
+                Tentar novamente
+              </Button>
+            ) : (
+              <Button to={ROUTES.PROJECTS} variant="ghost">Ver projetos</Button>
+            )}
           </>
         }
-        description={loadErrorMessage}
-        title="Nao foi possivel editar este projeto"
+        description={loadErrorMessage || categoriesErrorMessage}
+        title="Nao foi possivel carregar o formulario"
         tone="error"
       />
     );
   }
+
+  const categoryOptions = [
+    { value: '', label: 'Selecione uma categoria' },
+    ...categories.map((category) => ({
+      value: String(category.id),
+      label: category.name,
+    })),
+  ];
 
   return (
     <div className="space-y-8">
@@ -212,17 +265,14 @@ function ProjectFormPage() {
             required
             value={form.titulo}
           />
-          <Input
+          <Select
             error={formErrors.idCategoria}
             disabled={isSubmitting}
             id="idCategoria"
             label="Categoria"
-            min={1}
             name="idCategoria"
             onChange={handleChange}
-            placeholder="ID da categoria"
-            required
-            type="number"
+            options={categoryOptions}
             value={form.idCategoria}
           />
         </div>
