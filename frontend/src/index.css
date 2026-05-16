@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color: #1f2522;
+    background-color: #f8f4ed;
+    font-family: 'Source Sans 3', sans-serif;
+  }
+
+  * {
+    @apply border-mist-200;
+  }
+
+  body {
+    @apply min-h-screen bg-sand-50 text-ink-900 antialiased;
+  }
+
+  #root {
+    @apply min-h-screen;
+  }
+
+  a {
+    @apply transition-colors duration-200;
+  }
+}
+
+@layer components {
+  .surface-card {
+    @apply rounded-3xl border border-white/70 bg-white/85 shadow-soft backdrop-blur;
+  }
+
+  .section-title {
+    @apply font-display text-2xl font-semibold tracking-tight text-ink-900;
+  }
+}
