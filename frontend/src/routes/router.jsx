@@ -6,6 +6,7 @@ import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import OrganizationDashboardPage from '../pages/OrganizationDashboardPage';
+import ParticipationHistoryPage from '../pages/ParticipationHistoryPage';
 import ProjectDetailPage from '../pages/ProjectDetailPage';
 import ProjectFormPage from '../pages/ProjectFormPage';
 import ProjectsPage from '../pages/ProjectsPage';
@@ -32,7 +33,10 @@ export const router = createBrowserRouter([
       },
       {
         element: <ProtectedRoute allowedRoles={[USER_ROLES.VOLUNTARIO]} />,
-        children: [{ path: 'dashboard/voluntario', element: <VolunteerDashboardPage /> }],
+        children: [
+          { path: 'dashboard/voluntario', element: <VolunteerDashboardPage /> },
+          { path: 'dashboard/voluntario/historico', element: <ParticipationHistoryPage /> },
+        ],
       },
       { path: '*', element: <NotFoundPage /> },
     ],

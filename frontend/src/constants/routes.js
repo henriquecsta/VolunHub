@@ -7,6 +7,7 @@ export const ROUTES = {
   PROJECTS: '/projetos',
   DASHBOARD_ORGANIZATION: '/dashboard/organizacao',
   DASHBOARD_VOLUNTEER: '/dashboard/voluntario',
+  DASHBOARD_VOLUNTEER_HISTORY: '/dashboard/voluntario/historico',
   ORGANIZATION_PROJECT_NEW: '/organizacao/projetos/novo',
 };
 

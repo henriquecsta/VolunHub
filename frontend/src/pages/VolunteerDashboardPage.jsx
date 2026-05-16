@@ -62,7 +62,14 @@ function VolunteerDashboardPage() {
   return (
     <div className="space-y-8">
       <PageSection
-        actions={<Button to={ROUTES.PROJECTS}>Explorar oportunidades</Button>}
+        actions={
+          <>
+            <Button to={ROUTES.DASHBOARD_VOLUNTEER_HISTORY} variant="ghost">
+              Ver historico
+            </Button>
+            <Button to={ROUTES.PROJECTS}>Explorar oportunidades</Button>
+          </>
+        }
         description={`Sessao protegida para ${email}. Acompanhe aqui suas inscricoes e o andamento de cada oportunidade.`}
         eyebrow="Dashboard voluntario"
         title="Suas inscricoes em um painel simples de acompanhar."
@@ -85,6 +92,9 @@ function VolunteerDashboardPage() {
           <div className="flex flex-wrap gap-3">
             <Button disabled={isLoading} onClick={handleRefresh} variant="ghost">
               {isLoading ? 'Atualizando...' : 'Atualizar'}
+            </Button>
+            <Button to={ROUTES.DASHBOARD_VOLUNTEER_HISTORY} variant="ghost">
+              Historico
             </Button>
             <Button to={ROUTES.PROJECTS} variant="ghost">
               Buscar projetos
