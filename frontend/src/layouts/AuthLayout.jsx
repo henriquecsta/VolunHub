@@ -1,5 +1,5 @@
-import { Link, Outlet } from 'react-router-dom';
-import { ROUTES } from '../constants/routes';
+import { Outlet } from 'react-router-dom';
+import BrandLogo from '../components/common/BrandLogo';
 
 function AuthLayout() {
   return (
@@ -7,30 +7,30 @@ function AuthLayout() {
       <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.1fr_0.9fr]">
         <section className="flex flex-col justify-between rounded-[2rem] border border-white/70 bg-forest-700 px-8 py-10 text-white shadow-soft">
           <div className="space-y-6">
-            <Link className="font-display text-2xl font-semibold tracking-tight" to={ROUTES.HOME}>
-              VolunHub
-            </Link>
+            <div className="inline-flex rounded-3xl bg-white p-2 shadow-soft">
+              <BrandLogo className="rounded-2xl" size="lg" />
+            </div>
             <div className="space-y-4">
               <span className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]">
-                Frontend base
+                Voluntariado conectado
               </span>
               <h1 className="font-display text-4xl font-semibold leading-tight">
-                Uma fundacao solida para autenticacao, rotas e consumo do backend.
+                Uma plataforma para aproximar projetos sociais e pessoas voluntarias.
               </h1>
               <p className="max-w-xl text-lg text-emerald-50/85">
-                Esta primeira etapa ja deixa JWT, navegacao e organizacao de codigo prontos para a proxima fase de integracoes.
+                Publique oportunidades, acompanhe inscricoes e organize historicos de participacao em um unico ambiente.
               </p>
             </div>
           </div>
 
           <div className="mt-10 grid gap-4 sm:grid-cols-2">
             <div className="rounded-3xl border border-white/15 bg-white/10 p-5">
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-emerald-100">Rotas</p>
-              <p className="mt-2 text-sm text-emerald-50/80">Publicas, privadas e protegidas por perfil.</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-emerald-100">Voluntarios</p>
+              <p className="mt-2 text-sm text-emerald-50/80">Buscam projetos, realizam inscricoes e acompanham historico.</p>
             </div>
             <div className="rounded-3xl border border-white/15 bg-white/10 p-5">
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-emerald-100">Axios</p>
-              <p className="mt-2 text-sm text-emerald-50/80">Base URL centralizada e envio automatico do token.</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-emerald-100">Organizacoes</p>
+              <p className="mt-2 text-sm text-emerald-50/80">Publicam projetos e gerenciam inscricoes recebidas.</p>
             </div>
           </div>
         </section>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import BrandLogo from '../components/common/BrandLogo';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { ROUTES, getDashboardPathByRole } from '../constants/routes';
@@ -70,7 +71,8 @@ function LoginPage() {
 
   return (
     <div className="space-y-6">
-      <div className="space-y-2">
+      <div className="space-y-3">
+        <BrandLogo linkTo={null} size="md" />
         <p className="text-sm font-semibold uppercase tracking-[0.16em] text-clay-700">Acesso</p>
         <h2 className="font-display text-3xl font-semibold text-ink-900">Entrar no VolunHub</h2>
         <p className="text-slate-600">Acesse sua conta para acompanhar projetos, inscricoes e acoes da sua organizacao.</p>

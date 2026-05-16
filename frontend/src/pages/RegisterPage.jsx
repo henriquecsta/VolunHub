@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import BrandLogo from '../components/common/BrandLogo';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Select from '../components/ui/Select';
@@ -68,7 +69,8 @@ function RegisterPage() {
 
   return (
     <div className="space-y-6">
-      <div className="space-y-2">
+      <div className="space-y-3">
+        <BrandLogo linkTo={null} size="md" />
         <p className="text-sm font-semibold uppercase tracking-[0.16em] text-clay-700">Cadastro</p>
         <h2 className="font-display text-3xl font-semibold text-ink-900">Criar conta no VolunHub</h2>
         <p className="text-slate-600">Escolha seu perfil e comece a participar ou publicar oportunidades de voluntariado.</p>

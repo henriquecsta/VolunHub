@@ -1,6 +1,7 @@
-import { Link, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { ROUTES, getDashboardPathByRole } from '../../constants/routes';
 import { useAuth } from '../../hooks/useAuth';
+import BrandLogo from '../common/BrandLogo';
 import Button from '../ui/Button';
 
 function navigationClassName({ isActive }) {
@@ -17,9 +18,7 @@ function Header() {
     <header className="border-b border-white/70 bg-sand-50/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center justify-between gap-4">
-          <Link className="font-display text-2xl font-semibold tracking-tight text-ink-900" to={ROUTES.HOME}>
-            VolunHub
-          </Link>
+          <BrandLogo size="sm" />
           {isAuthenticated ? (
             <span className="rounded-full bg-mist-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-forest-700">
               {profile}
