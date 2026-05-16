@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import PageLoader from '../components/feedback/PageLoader';
 import StatusPanel from '../components/feedback/StatusPanel';
+import ProjectSubscriptionFeedback from '../components/projects/ProjectSubscriptionFeedback';
 import Button from '../components/ui/Button';
 import PageSection from '../components/ui/PageSection';
 import { ROUTES } from '../constants/routes';
@@ -278,17 +279,16 @@ function ProjectDetailPage() {
           </article>
         </div>
 
-        {subscriptionSuccessMessage ? (
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-            {subscriptionSuccessMessage}
-          </div>
-        ) : null}
-
-        {subscriptionErrorMessage ? (
-          <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {subscriptionErrorMessage}
-          </div>
-        ) : null}
+        <ProjectSubscriptionFeedback
+          errorMessage={subscriptionErrorMessage}
+          isAuthenticated={isAuthenticated}
+          isChecking={isSubscriptionChecking}
+          isSubmitting={isSubscriptionSubmitting}
+          isVolunteer={isVolunteer}
+          projectStatus={project.status}
+          subscription={subscription}
+          successMessage={subscriptionSuccessMessage}
+        />
       </PageSection>
 
       <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
