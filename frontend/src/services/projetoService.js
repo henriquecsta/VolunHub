@@ -112,6 +112,11 @@ export async function criarProjeto(payload) {
   return adaptProjeto(response.data);
 }
 
+export async function atualizarProjeto(idProjeto, payload) {
+  const response = await api.put(`/projetos/${normalizeProjectId(idProjeto)}`, buildProjetoPayload(payload));
+  return adaptProjeto(response.data);
+}
+
 export async function listarProjetosDaOrganizacao(idOrganizacao) {
   const normalizedOrganizationId = Number(idOrganizacao);
 
@@ -175,4 +180,14 @@ function buildProjetoPayload(payload) {
 
 function normalizeRequiredText(value) {
   return String(value ?? '').trim();
+}
+
+function normalizeProjectId(idProjeto) {
+  const normalizedId = Number(idProjeto);
+
+  if (!Number.isInteger(normalizedId) || normalizedId <= 0) {
+    throw new Error('Projeto invalido para atualizacao.');
+  }
+
+  return normalizedId;
 }

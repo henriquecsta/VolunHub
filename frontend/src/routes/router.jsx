@@ -27,6 +27,7 @@ export const router = createBrowserRouter([
         children: [
           { path: 'dashboard/organizacao', element: <OrganizationDashboardPage /> },
           { path: 'organizacao/projetos/novo', element: <ProjectFormPage /> },
+          { path: 'organizacao/projetos/:projectId/editar', element: <ProjectFormPage /> },
         ],
       },
       {

@@ -1,12 +1,15 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import PageLoader from '../components/feedback/PageLoader';
+import StatusPanel from '../components/feedback/StatusPanel';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import PageSection from '../components/ui/PageSection';
 import Select from '../components/ui/Select';
 import Textarea from '../components/ui/Textarea';
 import { ROUTES } from '../constants/routes';
-import { criarProjeto } from '../services/projetoService';
+import { useAuth } from '../hooks/useAuth';
+import { atualizarProjeto, buscarProjetoPorId, criarProjeto } from '../services/projetoService';
 import { getErrorMessage } from '../utils/http';
 
 const PARTICIPATION_OPTIONS = [
@@ -36,12 +39,66 @@ const INITIAL_FORM = {
 };
 
 function ProjectFormPage() {
+  const { projectId } = useParams();
   const navigate = useNavigate();
+  const { idUsuario } = useAuth();
+  const isEditMode = Boolean(projectId);
   const [form, setForm] = useState(() => ({ ...INITIAL_FORM }));
   const [formErrors, setFormErrors] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingProject, setIsLoadingProject] = useState(isEditMode);
+  const [loadErrorMessage, setLoadErrorMessage] = useState('');
+
+  useEffect(() => {
+    let shouldIgnore = false;
+
+    async function loadProject() {
+      if (!isEditMode) {
+        setIsLoadingProject(false);
+        return;
+      }
+
+      if (!projectId || Number.isNaN(Number(projectId))) {
+        setLoadErrorMessage('Projeto invalido para edicao.');
+        setIsLoadingProject(false);
+        return;
+      }
+
+      setIsLoadingProject(true);
+      setLoadErrorMessage('');
+
+      try {
+        const project = await buscarProjetoPorId(projectId);
+
+        if (shouldIgnore) {
+          return;
+        }
+
+        if (Number(project.organizationId) !== Number(idUsuario)) {
+          setLoadErrorMessage('Voce so pode editar projetos criados pela sua organizacao.');
+          return;
+        }
+
+        setForm(mapProjectToForm(project));
+      } catch (error) {
+        if (!shouldIgnore) {
+          setLoadErrorMessage(getErrorMessage(error, 'Nao foi possivel carregar este projeto.'));
+        }
+      } finally {
+        if (!shouldIgnore) {
+          setIsLoadingProject(false);
+        }
+      }
+    }
+
+    loadProject();
+
+    return () => {
+      shouldIgnore = true;
+    };
+  }, [idUsuario, isEditMode, projectId]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -77,8 +134,14 @@ function ProjectFormPage() {
     setIsSubmitting(true);
 
     try {
-      await criarProjeto(form);
-      setSuccessMessage('Projeto criado com sucesso.');
+      if (isEditMode) {
+        await atualizarProjeto(projectId, form);
+        setSuccessMessage('Projeto atualizado com sucesso.');
+      } else {
+        await criarProjeto(form);
+        setSuccessMessage('Projeto criado com sucesso.');
+      }
+
       window.setTimeout(() => {
         navigate(ROUTES.DASHBOARD_ORGANIZATION, { replace: true });
       }, 700);
@@ -89,13 +152,38 @@ function ProjectFormPage() {
     }
   }
 
+  if (isLoadingProject) {
+    return (
+      <PageLoader
+        description="Buscando dados do projeto para preencher o formulario."
+        title="Carregando projeto"
+      />
+    );
+  }
+
+  if (loadErrorMessage) {
+    return (
+      <StatusPanel
+        actions={
+          <>
+            <Button to={ROUTES.DASHBOARD_ORGANIZATION}>Voltar ao dashboard</Button>
+            <Button to={ROUTES.PROJECTS} variant="ghost">Ver projetos</Button>
+          </>
+        }
+        description={loadErrorMessage}
+        title="Nao foi possivel editar este projeto"
+        tone="error"
+      />
+    );
+  }
+
   return (
     <div className="space-y-8">
       <PageSection
         actions={<Button to={ROUTES.DASHBOARD_ORGANIZATION} variant="ghost">Cancelar</Button>}
         description="Preencha os dados principais da oportunidade para publicar ou atualizar um projeto da organizacao."
         eyebrow="Projetos"
-        title="Novo projeto"
+        title={isEditMode ? 'Editar projeto' : 'Novo projeto'}
       />
 
       {successMessage ? (
@@ -307,6 +395,22 @@ function validateProjectForm(form) {
   }
 
   return errors;
+}
+
+function mapProjectToForm(project) {
+  return {
+    titulo: project.title ?? '',
+    descricao: project.description ?? '',
+    cidade: project.city ?? '',
+    estado: project.state ?? '',
+    local: project.venue ?? '',
+    tipoParticipacao: project.participationType ?? PARTICIPATION_OPTIONS[0].value,
+    dataInicio: project.startDate ?? '',
+    dataFim: project.endDate ?? '',
+    vagas: project.vacancies ? String(project.vacancies) : '',
+    status: project.status ?? STATUS_OPTIONS[0].value,
+    idCategoria: project.categoryId ? String(project.categoryId) : '',
+  };
 }
 
 export default ProjectFormPage;

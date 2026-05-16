@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { getProjectDetailPath } from '../../constants/routes';
+import { getOrganizationProjectEditPath, getProjectDetailPath } from '../../constants/routes';
 
 const projectStatusClassNames = {
   ATIVO: 'bg-emerald-100 text-emerald-700',
@@ -35,6 +35,12 @@ function OrganizationProjectCard({ project, subscriptionCount }) {
           to={getProjectDetailPath(project.id)}
         >
           Ver projeto
+        </Link>
+        <Link
+          className="inline-flex items-center justify-center rounded-full bg-forest-500 px-4 py-2 font-semibold text-white hover:bg-forest-600"
+          to={getOrganizationProjectEditPath(project.id)}
+        >
+          Editar
         </Link>
       </div>
     </article>
