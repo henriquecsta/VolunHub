@@ -7,6 +7,7 @@ import Input from '../components/ui/Input';
 import PageSection from '../components/ui/PageSection';
 import Select from '../components/ui/Select';
 import Textarea from '../components/ui/Textarea';
+import { PROJECT_STATUS_OPTIONS } from '../constants/projects';
 import { ROUTES } from '../constants/routes';
 import { useAuth } from '../hooks/useAuth';
 import { listarCategorias } from '../services/categoriaService';
@@ -19,12 +20,6 @@ const PARTICIPATION_OPTIONS = [
   { value: 'HIBRIDO', label: 'Hibrido' },
 ];
 
-const STATUS_OPTIONS = [
-  { value: 'ATIVO', label: 'Ativo' },
-  { value: 'ENCERRADO', label: 'Encerrado' },
-  { value: 'CANCELADO', label: 'Cancelado' },
-];
-
 const INITIAL_FORM = {
   titulo: '',
   descricao: '',
@@ -35,7 +30,7 @@ const INITIAL_FORM = {
   dataInicio: '',
   dataFim: '',
   vagas: '',
-  status: STATUS_OPTIONS[0].value,
+  status: PROJECT_STATUS_OPTIONS[0].value,
   idCategoria: '',
 };
 
@@ -380,7 +375,7 @@ function ProjectFormPage() {
             label="Status"
             name="status"
             onChange={handleChange}
-            options={STATUS_OPTIONS}
+            options={PROJECT_STATUS_OPTIONS}
             value={form.status}
           />
         </div>
@@ -458,7 +453,7 @@ function mapProjectToForm(project) {
     dataInicio: project.startDate ?? '',
     dataFim: project.endDate ?? '',
     vagas: project.vacancies ? String(project.vacancies) : '',
-    status: project.status ?? STATUS_OPTIONS[0].value,
+    status: project.status ?? PROJECT_STATUS_OPTIONS[0].value,
     idCategoria: project.categoryId ? String(project.categoryId) : '',
   };
 }

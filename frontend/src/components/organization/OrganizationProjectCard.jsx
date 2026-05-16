@@ -1,5 +1,7 @@
 import { getOrganizationProjectEditPath, getProjectDetailPath } from '../../constants/routes';
 import Button from '../ui/Button';
+import Select from '../ui/Select';
+import { PROJECT_STATUS_OPTIONS } from '../../constants/projects';
 
 const projectStatusClassNames = {
   ATIVO: 'bg-emerald-100 text-emerald-700',
@@ -7,9 +9,10 @@ const projectStatusClassNames = {
   ENCERRADO: 'bg-slate-100 text-slate-600',
 };
 
-function OrganizationProjectCard({ actionState, onDelete, project, subscriptionCount }) {
+function OrganizationProjectCard({ actionState, onDelete, onStatusChange, project, subscriptionCount }) {
   const statusClassName = projectStatusClassNames[project.status] ?? 'bg-mist-100 text-slate-600';
   const isDeleting = actionState?.type === 'delete';
+  const isUpdatingStatus = actionState?.type === 'status';
   const isActionRunning = Boolean(actionState);
 
   return (
@@ -32,6 +35,22 @@ function OrganizationProjectCard({ actionState, onDelete, project, subscriptionC
         <p>{project.city}, {project.state}</p>
         <p>{project.dateRangeLabel}</p>
         <p>{subscriptionCount} inscricoes recebidas</p>
+        {onStatusChange ? (
+          <div className="space-y-2">
+            <Select
+              className="py-2 text-sm"
+              disabled={isActionRunning}
+              id={`project-status-${project.id}`}
+              label="Status"
+              onChange={(event) => onStatusChange(project, event.target.value)}
+              options={PROJECT_STATUS_OPTIONS}
+              value={project.status}
+            />
+            {isUpdatingStatus ? (
+              <p className="text-xs font-semibold text-forest-600">Atualizando status...</p>
+            ) : null}
+          </div>
+        ) : null}
         <Button size="sm" to={getProjectDetailPath(project.id)} variant="ghost">
           Ver projeto
         </Button>

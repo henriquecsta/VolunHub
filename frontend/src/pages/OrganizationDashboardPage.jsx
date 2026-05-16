@@ -9,7 +9,11 @@ import PageSection from '../components/ui/PageSection';
 import { ROUTES } from '../constants/routes';
 import { useAuth } from '../hooks/useAuth';
 import { atualizarStatusInscricao, listarInscricoesDoProjeto } from '../services/inscricaoService';
-import { excluirProjeto, listarProjetosDaOrganizacao } from '../services/projetoService';
+import {
+  atualizarStatusProjeto,
+  excluirProjeto,
+  listarProjetosDaOrganizacao,
+} from '../services/projetoService';
 import { getErrorMessage } from '../utils/http';
 
 function OrganizationDashboardPage() {
@@ -138,6 +142,61 @@ function OrganizationDashboardPage() {
     } catch (error) {
       setProjectActionErrorMessage(
         getErrorMessage(error, 'Nao foi possivel excluir este projeto.'),
+      );
+    } finally {
+      setProjectActionsById((currentActions) => {
+        const nextActions = { ...currentActions };
+        delete nextActions[project.id];
+        return nextActions;
+      });
+    }
+  }
+
+  async function handleUpdateProjectStatus(project, status) {
+    if (!project?.id || project.status === status || projectActionsById[project.id]) {
+      return;
+    }
+
+    if (!canManageProject(project, idUsuario)) {
+      setProjectActionErrorMessage('Voce so pode alterar projetos criados pela sua organizacao.');
+      setProjectActionSuccessMessage('');
+      return;
+    }
+
+    setProjectActionsById((currentActions) => ({
+      ...currentActions,
+      [project.id]: { type: 'status', status },
+    }));
+    setProjectActionErrorMessage('');
+    setProjectActionSuccessMessage('');
+
+    try {
+      const updatedProject = await atualizarStatusProjeto(project, status);
+
+      setProjects((currentProjects) =>
+        currentProjects.map((currentProject) =>
+          currentProject.id === updatedProject.id ? updatedProject : currentProject,
+        ),
+      );
+      setSubscriptions((currentSubscriptions) =>
+        currentSubscriptions.map((subscription) =>
+          subscription.projectId === updatedProject.id
+            ? mapSubscriptionProjectStatus(subscription, updatedProject)
+            : subscription,
+        ),
+      );
+      setSubscriptionsByProjectId((currentSubscriptionsByProjectId) => ({
+        ...currentSubscriptionsByProjectId,
+        [updatedProject.id]: (
+          currentSubscriptionsByProjectId[updatedProject.id] ?? []
+        ).map((subscription) => mapSubscriptionProjectStatus(subscription, updatedProject)),
+      }));
+      setProjectActionSuccessMessage(
+        `Status do projeto "${updatedProject.title}" atualizado para ${updatedProject.statusLabel}.`,
+      );
+    } catch (error) {
+      setProjectActionErrorMessage(
+        getErrorMessage(error, 'Nao foi possivel atualizar o status deste projeto.'),
       );
     } finally {
       setProjectActionsById((currentActions) => {
@@ -282,6 +341,7 @@ function OrganizationDashboardPage() {
                 actionState={projectActionsById[project.id]}
                 key={project.id}
                 onDelete={handleDeleteProject}
+                onStatusChange={handleUpdateProjectStatus}
                 project={project}
                 subscriptionCount={subscriptionsByProjectId[project.id]?.length ?? 0}
               />
@@ -332,6 +392,14 @@ function OrganizationDashboardPage() {
 
 function canManageProject(project, idUsuario) {
   return Number(project?.organizationId) === Number(idUsuario);
+}
+
+function mapSubscriptionProjectStatus(subscription, project) {
+  return {
+    ...subscription,
+    projectStatus: project.status,
+    projectStatusLabel: project.statusLabel,
+  };
 }
 
 function getSubscriptionActions({ actionInProgress, onUpdateStatus, subscription }) {

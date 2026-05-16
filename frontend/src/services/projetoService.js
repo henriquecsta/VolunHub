@@ -1,9 +1,10 @@
 import api from './api';
+import { PROJECT_STATUS_VALUES } from '../constants/projects';
 import { formatDateRange, formatEnumLabel, truncateText } from '../utils/formatters';
 
 const DEFAULT_PAGE = 0;
 const DEFAULT_SIZE = 6;
-const ORGANIZATION_PROJECT_STATUSES = ['ATIVO', 'ENCERRADO', 'CANCELADO'];
+const ORGANIZATION_PROJECT_STATUSES = PROJECT_STATUS_VALUES;
 const ORGANIZATION_PROJECT_PAGE_SIZE = 100;
 
 function normalizeText(value) {
@@ -117,6 +118,16 @@ export async function atualizarProjeto(idProjeto, payload) {
   return adaptProjeto(response.data);
 }
 
+export async function atualizarStatusProjeto(project, status) {
+  const normalizedStatus = normalizeProjectStatusForUpdate(status);
+  const response = await api.put(
+    `/projetos/${normalizeProjectId(project?.id)}`,
+    buildProjetoPayload(buildProjetoStatusPayload(project, normalizedStatus)),
+  );
+
+  return adaptProjeto(response.data);
+}
+
 export async function excluirProjeto(idProjeto) {
   await api.delete(`/projetos/${normalizeProjectId(idProjeto)}`);
 }
@@ -182,6 +193,22 @@ function buildProjetoPayload(payload) {
   };
 }
 
+function buildProjetoStatusPayload(project, status) {
+  return {
+    titulo: project?.title,
+    descricao: project?.description,
+    cidade: project?.city,
+    estado: project?.state,
+    local: project?.venue,
+    tipoParticipacao: project?.participationType,
+    dataInicio: project?.startDate,
+    dataFim: project?.endDate,
+    vagas: project?.vacancies,
+    status,
+    idCategoria: project?.categoryId,
+  };
+}
+
 function normalizeRequiredText(value) {
   return String(value ?? '').trim();
 }
@@ -194,4 +221,14 @@ function normalizeProjectId(idProjeto) {
   }
 
   return normalizedId;
+}
+
+function normalizeProjectStatusForUpdate(status) {
+  const normalizedStatus = normalizeStatus(status);
+
+  if (!PROJECT_STATUS_VALUES.includes(normalizedStatus)) {
+    throw new Error('Status de projeto invalido.');
+  }
+
+  return normalizedStatus;
 }
