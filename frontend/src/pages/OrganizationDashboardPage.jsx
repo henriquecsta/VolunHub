@@ -138,10 +138,13 @@ function OrganizationDashboardPage() {
         delete nextSubscriptionsByProjectId[project.id];
         return nextSubscriptionsByProjectId;
       });
-      setProjectActionSuccessMessage('Projeto excluido com sucesso.');
+      setProjectActionSuccessMessage(`Projeto "${project.title}" excluido com sucesso.`);
     } catch (error) {
       setProjectActionErrorMessage(
-        getErrorMessage(error, 'Nao foi possivel excluir este projeto.'),
+        getErrorMessage(
+          error,
+          'Nao foi possivel excluir este projeto. Se houver registros vinculados, altere o status para Encerrado ou Cancelado.',
+        ),
       );
     } finally {
       setProjectActionsById((currentActions) => {
@@ -314,6 +317,13 @@ function OrganizationDashboardPage() {
         />
       ) : null}
 
+      {!errorMessage ? (
+        <ProjectManagementFeedback
+          errorMessage={projectActionErrorMessage}
+          successMessage={projectActionSuccessMessage}
+        />
+      ) : null}
+
       {!isLoading && !errorMessage && !hasProjects ? (
         <StatusPanel
           actions={<Button to={ROUTES.PROJECTS}>Consultar projetos</Button>}
@@ -325,16 +335,6 @@ function OrganizationDashboardPage() {
       {!errorMessage && hasProjects ? (
         <section className="space-y-4">
           <h2 className="font-display text-2xl font-semibold text-ink-900">Projetos publicados</h2>
-          {projectActionSuccessMessage ? (
-            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-              {projectActionSuccessMessage}
-            </div>
-          ) : null}
-          {projectActionErrorMessage ? (
-            <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              {projectActionErrorMessage}
-            </div>
-          ) : null}
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {projects.map((project) => (
               <OrganizationProjectCard
@@ -400,6 +400,29 @@ function mapSubscriptionProjectStatus(subscription, project) {
     projectStatus: project.status,
     projectStatusLabel: project.statusLabel,
   };
+}
+
+function ProjectManagementFeedback({ errorMessage, successMessage }) {
+  const message = errorMessage || successMessage;
+
+  if (!message) {
+    return null;
+  }
+
+  const isError = Boolean(errorMessage);
+
+  return (
+    <div
+      className={
+        isError
+          ? 'rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700'
+          : 'rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800'
+      }
+      role={isError ? 'alert' : 'status'}
+    >
+      {message}
+    </div>
+  );
 }
 
 function getSubscriptionActions({ actionInProgress, onUpdateStatus, subscription }) {

@@ -16,7 +16,7 @@ function OrganizationProjectCard({ actionState, onDelete, onStatusChange, projec
   const isActionRunning = Boolean(actionState);
 
   return (
-    <article className="surface-card flex h-full flex-col justify-between p-6">
+    <article aria-busy={isActionRunning} className="surface-card flex h-full flex-col justify-between p-6">
       <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em]">
           <span className={`rounded-full px-3 py-1 ${statusClassName}`}>
@@ -35,19 +35,23 @@ function OrganizationProjectCard({ actionState, onDelete, onStatusChange, projec
         <p>{project.city}, {project.state}</p>
         <p>{project.dateRangeLabel}</p>
         <p>{subscriptionCount} inscricoes recebidas</p>
-        {onStatusChange ? (
-          <div className="space-y-2">
-            <Select
-              className="py-2 text-sm"
-              disabled={isActionRunning}
-              id={`project-status-${project.id}`}
-              label="Status"
-              onChange={(event) => onStatusChange(project, event.target.value)}
-              options={PROJECT_STATUS_OPTIONS}
-              value={project.status}
-            />
-            {isUpdatingStatus ? (
-              <p className="text-xs font-semibold text-forest-600">Atualizando status...</p>
+        {onStatusChange || isActionRunning ? (
+          <div className="space-y-3 rounded-2xl border border-mist-200 bg-white/70 p-3">
+            {onStatusChange ? (
+              <Select
+                className="py-2 text-sm"
+                disabled={isActionRunning}
+                id={`project-status-${project.id}`}
+                label="Status"
+                onChange={(event) => onStatusChange(project, event.target.value)}
+                options={PROJECT_STATUS_OPTIONS}
+                value={project.status}
+              />
+            ) : null}
+            {isActionRunning ? (
+              <p className="rounded-xl bg-mist-100 px-3 py-2 text-xs font-semibold text-slate-600" role="status">
+                {isDeleting ? 'Excluindo projeto...' : 'Salvando status...'}
+              </p>
             ) : null}
           </div>
         ) : null}
@@ -62,9 +66,15 @@ function OrganizationProjectCard({ actionState, onDelete, onStatusChange, projec
             disabled={isActionRunning}
             onClick={() => onDelete(project)}
             size="sm"
-            variant="outline"
+            variant="danger"
           >
-            {isDeleting ? 'Excluindo...' : 'Excluir'}
+            {isUpdatingStatus ? (
+              'Aguarde...'
+            ) : isDeleting ? (
+              'Excluindo...'
+            ) : (
+              'Excluir'
+            )}
           </Button>
         ) : null}
       </div>

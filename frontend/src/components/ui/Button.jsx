@@ -6,6 +6,7 @@ const variants = {
   secondary: 'bg-forest-500 text-white hover:bg-forest-600',
   ghost: 'bg-white/70 text-ink-900 hover:bg-white',
   outline: 'border border-forest-500 text-forest-600 hover:bg-forest-500 hover:text-white',
+  danger: 'bg-red-600 text-white hover:bg-red-700',
 };
 
 const sizes = {
