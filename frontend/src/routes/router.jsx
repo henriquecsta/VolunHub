@@ -11,7 +11,7 @@ import ProjectDetailPage from '../pages/ProjectDetailPage';
 import ProjectsPage from '../pages/ProjectsPage';
 import RegisterPage from '../pages/RegisterPage';
 import GuestRoute from './GuestRoute';
-import PrivateRoute from './PrivateRoute';
+import ProtectedRoute from './ProtectedRoute';
 
 export const router = createBrowserRouter([
   {
@@ -22,11 +22,11 @@ export const router = createBrowserRouter([
       { path: 'projetos', element: <ProjectsPage /> },
       { path: 'projetos/:projectId', element: <ProjectDetailPage /> },
       {
-        element: <PrivateRoute allowedRoles={[USER_ROLES.ORGANIZACAO]} />,
+        element: <ProtectedRoute allowedRoles={[USER_ROLES.ORGANIZACAO]} />,
         children: [{ path: 'dashboard/organizacao', element: <DashboardOrganizationPage /> }],
       },
       {
-        element: <PrivateRoute allowedRoles={[USER_ROLES.VOLUNTARIO]} />,
+        element: <ProtectedRoute allowedRoles={[USER_ROLES.VOLUNTARIO]} />,
         children: [{ path: 'dashboard/voluntario', element: <DashboardVolunteerPage /> }],
       },
       { path: '*', element: <NotFoundPage /> },

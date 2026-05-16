@@ -14,7 +14,13 @@ export function getProjectDetailPath(projectId = ':projectId') {
 }
 
 export function getDashboardPathByRole(profile) {
-  return profile === USER_ROLES.ORGANIZACAO
-    ? ROUTES.DASHBOARD_ORGANIZATION
-    : ROUTES.DASHBOARD_VOLUNTEER;
+  if (profile === USER_ROLES.ORGANIZACAO) {
+    return ROUTES.DASHBOARD_ORGANIZATION;
+  }
+
+  if (profile === USER_ROLES.VOLUNTARIO) {
+    return ROUTES.DASHBOARD_VOLUNTEER;
+  }
+
+  return ROUTES.PROJECTS;
 }
