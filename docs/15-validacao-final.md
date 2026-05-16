@@ -31,7 +31,7 @@ Data da validacao: 2026-05-16
 ## Problemas encontrados
 - Preflight CORS retornava `403` para origem `http://localhost:5173`.
 - Backend local com MariaDB 12 nao conseguia inferir o dialect automaticamente pelo Hibernate.
-- Arquivos antigos de mock/dashboard inicial nao eram mais utilizados.
+- Arquivos antigos com dados simulados e dashboards iniciais nao eram mais utilizados.
 
 ## Observacoes
 - A validacao criou usuarios e projetos de teste com emails no dominio `volunhub.test`.
