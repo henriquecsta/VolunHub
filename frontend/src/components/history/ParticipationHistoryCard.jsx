@@ -22,18 +22,21 @@ function ParticipationHistoryCard({ history }) {
           <span className="text-slate-500">{history.registeredAtLabel}</span>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-3">
           <h3 className="font-display text-2xl font-semibold text-ink-900">
             {history.projectTitle}
           </h3>
-          <p className="text-base text-slate-600">
-            {history.note ?? 'Nenhuma observacao foi registrada para esta participacao.'}
-          </p>
+          {history.note ? (
+            <div className="rounded-2xl border border-mist-200 bg-white/70 p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Observacao</p>
+              <p className="mt-2 text-base text-slate-600">{history.note}</p>
+            </div>
+          ) : null}
         </div>
       </div>
 
       <div className="mt-6 flex flex-col gap-3 border-t border-mist-200 pt-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-slate-500">Registro de participacao</p>
+        <p className="text-sm text-slate-500">Registrado em {history.registeredAtLabel}</p>
         {history.projectPath ? (
           <Link
             className="inline-flex items-center justify-center rounded-full border border-mist-300 px-4 py-2 text-sm font-semibold text-ink-900 hover:border-forest-500 hover:text-forest-600"

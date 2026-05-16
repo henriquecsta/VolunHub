@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import StatCard from '../components/common/StatCard';
+import PageLoader from '../components/feedback/PageLoader';
 import StatusPanel from '../components/feedback/StatusPanel';
 import ParticipationHistoryCard from '../components/history/ParticipationHistoryCard';
 import Button from '../components/ui/Button';
@@ -50,6 +52,9 @@ function ParticipationHistoryPage() {
   }, [refreshCount]);
 
   const hasHistoryEntries = historyEntries.length > 0;
+  const completedCount = historyEntries.filter(isCompletedHistoryEntry).length;
+  const notesCount = historyEntries.filter((history) => history.note).length;
+  const lastRecordLabel = historyEntries[0]?.registeredAtLabel ?? 'Sem registros';
 
   function handleRefresh() {
     setRefreshCount((currentCount) => currentCount + 1);
@@ -72,13 +77,25 @@ function ParticipationHistoryPage() {
         description={`Sessao protegida para ${email}. Consulte aqui os registros consolidados das suas participacoes.`}
         eyebrow="Historico"
         title="Seu historico de participacao."
-      />
+      >
+        <div className="grid gap-5 md:grid-cols-3">
+          <StatCard label="Registros" value={historyEntries.length} hint="Participacoes registradas por organizacoes." />
+          <StatCard label="Concluidos" value={completedCount} hint="Registros com situacao finalizada ou aprovada." />
+          <StatCard label="Observacoes" value={notesCount} hint={`Ultimo registro: ${lastRecordLabel}.`} />
+        </div>
+      </PageSection>
 
       {isLoading && !hasHistoryEntries ? (
-        <StatusPanel
-          description="Consultando `GET /historico/me` para recuperar seus registros."
+        <PageLoader
+          description="Buscando seus registros de participacao mais recentes."
           title="Carregando historico"
         />
+      ) : null}
+
+      {isLoading && hasHistoryEntries ? (
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+          Atualizando seu historico...
+        </div>
       ) : null}
 
       {!isLoading && errorMessage ? (
@@ -107,6 +124,10 @@ function ParticipationHistoryPage() {
       ) : null}
     </div>
   );
+}
+
+function isCompletedHistoryEntry(history) {
+  return ['APROVADA', 'CONCLUIDA', 'FINALIZADA'].includes(String(history.status ?? '').toUpperCase());
 }
 
 export default ParticipationHistoryPage;
