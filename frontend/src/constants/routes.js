@@ -7,10 +7,15 @@ export const ROUTES = {
   PROJECTS: '/projetos',
   DASHBOARD_ORGANIZATION: '/dashboard/organizacao',
   DASHBOARD_VOLUNTEER: '/dashboard/voluntario',
+  ORGANIZATION_PROJECT_NEW: '/organizacao/projetos/novo',
 };
 
 export function getProjectDetailPath(projectId = ':projectId') {
   return `${ROUTES.PROJECTS}/${projectId}`;
+}
+
+export function getOrganizationProjectEditPath(projectId = ':projectId') {
+  return `/organizacao/projetos/${projectId}/editar`;
 }
 
 export function getDashboardPathByRole(profile) {

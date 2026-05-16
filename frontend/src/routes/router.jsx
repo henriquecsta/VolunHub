@@ -7,6 +7,7 @@ import LoginPage from '../pages/LoginPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import OrganizationDashboardPage from '../pages/OrganizationDashboardPage';
 import ProjectDetailPage from '../pages/ProjectDetailPage';
+import ProjectFormPage from '../pages/ProjectFormPage';
 import ProjectsPage from '../pages/ProjectsPage';
 import RegisterPage from '../pages/RegisterPage';
 import VolunteerDashboardPage from '../pages/VolunteerDashboardPage';
@@ -23,7 +24,10 @@ export const router = createBrowserRouter([
       { path: 'projetos/:projectId', element: <ProjectDetailPage /> },
       {
         element: <ProtectedRoute allowedRoles={[USER_ROLES.ORGANIZACAO]} />,
-        children: [{ path: 'dashboard/organizacao', element: <OrganizationDashboardPage /> }],
+        children: [
+          { path: 'dashboard/organizacao', element: <OrganizationDashboardPage /> },
+          { path: 'organizacao/projetos/novo', element: <ProjectFormPage /> },
+        ],
       },
       {
         element: <ProtectedRoute allowedRoles={[USER_ROLES.VOLUNTARIO]} />,
