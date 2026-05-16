@@ -28,6 +28,23 @@ export function formatDate(dateValue) {
   return new Intl.DateTimeFormat('pt-BR').format(date);
 }
 
+export function formatDateTime(dateValue) {
+  if (!hasValue(dateValue)) {
+    return 'Data nao informada';
+  }
+
+  const date = new Date(dateValue);
+
+  if (Number.isNaN(date.getTime())) {
+    return String(dateValue);
+  }
+
+  return new Intl.DateTimeFormat('pt-BR', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+  }).format(date);
+}
+
 export function formatDateRange(startDate, endDate) {
   if (!hasValue(startDate) && !hasValue(endDate)) {
     return 'Periodo nao informado';
