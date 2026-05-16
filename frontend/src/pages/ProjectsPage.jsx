@@ -8,15 +8,11 @@ import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import PageSection from '../components/ui/PageSection';
 import Select from '../components/ui/Select';
+import { PROJECT_STATUS_OPTIONS } from '../constants/projects';
 import { ROUTES } from '../constants/routes';
+import { listarCategorias } from '../services/categoriaService';
 import { listarProjetos } from '../services/projetoService';
 import { getErrorMessage } from '../utils/http';
-
-const statusOptions = [
-  { value: 'ATIVO', label: 'Ativos' },
-  { value: 'ENCERRADO', label: 'Encerrados' },
-  { value: 'CANCELADO', label: 'Cancelados' },
-];
 
 const INITIAL_FILTERS = {
   termo: '',
@@ -46,6 +42,43 @@ function ProjectsPage() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+  const [categoriesErrorMessage, setCategoriesErrorMessage] = useState('');
+
+  useEffect(() => {
+    let shouldIgnore = false;
+
+    async function loadCategories() {
+      setIsLoadingCategories(true);
+      setCategoriesErrorMessage('');
+
+      try {
+        const response = await listarCategorias();
+
+        if (!shouldIgnore) {
+          setCategories(response);
+        }
+      } catch (error) {
+        if (!shouldIgnore) {
+          setCategories([]);
+          setCategoriesErrorMessage(
+            getErrorMessage(error, 'Nao foi possivel carregar as categorias.'),
+          );
+        }
+      } finally {
+        if (!shouldIgnore) {
+          setIsLoadingCategories(false);
+        }
+      }
+    }
+
+    loadCategories();
+
+    return () => {
+      shouldIgnore = true;
+    };
+  }, []);
 
   useEffect(() => {
     let shouldIgnore = false;
@@ -140,6 +173,18 @@ function ProjectsPage() {
     }));
   }
 
+  const categoryOptions = [
+    { value: '', label: isLoadingCategories ? 'Carregando categorias...' : 'Todas as categorias' },
+    ...categories.map((category) => ({
+      value: String(category.id),
+      label: category.name,
+    })),
+  ];
+  const projectStatusOptions = PROJECT_STATUS_OPTIONS.map((option) => ({
+    value: option.value,
+    label: `${option.label}s`,
+  }));
+
   return (
     <div className="space-y-8">
       <PageSection
@@ -149,7 +194,7 @@ function ProjectsPage() {
         actions={<Button to={ROUTES.LOGIN} variant="ghost">Entrar para se inscrever</Button>}
       >
         <form
-          className="surface-card grid gap-4 p-6 lg:grid-cols-[1.15fr_0.95fr_0.8fr_auto]"
+          className="surface-card grid gap-4 p-6 lg:grid-cols-[1.1fr_0.9fr_0.9fr_0.75fr_auto]"
           onSubmit={handleSubmit}
         >
           <Input
@@ -169,11 +214,21 @@ function ProjectsPage() {
             value={filters.local}
           />
           <Select
+            disabled={isLoadingCategories}
+            error={categoriesErrorMessage}
+            id="categoria"
+            label="Categoria"
+            name="categoria"
+            onChange={updateField}
+            options={categoryOptions}
+            value={filters.categoria}
+          />
+          <Select
             id="status"
             label="Status"
             name="status"
             onChange={updateField}
-            options={statusOptions}
+            options={projectStatusOptions}
             value={filters.status}
           />
           <div className="flex flex-col justify-end gap-3 sm:flex-row lg:flex-col">
