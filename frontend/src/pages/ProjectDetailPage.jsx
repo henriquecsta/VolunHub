@@ -6,6 +6,7 @@ import Button from '../components/ui/Button';
 import PageSection from '../components/ui/PageSection';
 import { ROUTES } from '../constants/routes';
 import { useAuth } from '../hooks/useAuth';
+import { inscreverEmProjeto } from '../services/inscricaoService';
 import { buscarProjetoPorId } from '../services/projetoService';
 import { getErrorMessage } from '../utils/http';
 
@@ -17,6 +18,10 @@ function ProjectDetailPage() {
   const [errorMessage, setErrorMessage] = useState('');
   const [notFound, setNotFound] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+  const [subscription, setSubscription] = useState(null);
+  const [isSubscriptionSubmitting, setIsSubscriptionSubmitting] = useState(false);
+  const [subscriptionSuccessMessage, setSubscriptionSuccessMessage] = useState('');
+  const [subscriptionErrorMessage, setSubscriptionErrorMessage] = useState('');
 
   useEffect(() => {
     let shouldIgnore = false;
@@ -77,6 +82,29 @@ function ProjectDetailPage() {
     setRetryCount((currentCount) => currentCount + 1);
   }
 
+  async function handleSubscribe() {
+    if (!project?.id || !isAuthenticated || !isVolunteer || isSubscriptionSubmitting || subscription) {
+      return;
+    }
+
+    setIsSubscriptionSubmitting(true);
+    setSubscriptionSuccessMessage('');
+    setSubscriptionErrorMessage('');
+
+    try {
+      const response = await inscreverEmProjeto(project.id);
+
+      setSubscription(response);
+      setSubscriptionSuccessMessage('Inscricao enviada. Agora e so aguardar a avaliacao da organizacao.');
+    } catch (error) {
+      setSubscriptionErrorMessage(
+        getErrorMessage(error, 'Nao foi possivel realizar sua inscricao neste projeto.'),
+      );
+    } finally {
+      setIsSubscriptionSubmitting(false);
+    }
+  }
+
   if (isLoading) {
     return (
       <PageLoader
@@ -129,8 +157,12 @@ function ProjectDetailPage() {
               Voltar para lista
             </Button>
             {isVolunteer ? (
-              <Button disabled variant="secondary">
-                Inscricao em breve
+              <Button
+                disabled={isSubscriptionSubmitting || Boolean(subscription)}
+                onClick={handleSubscribe}
+                variant="secondary"
+              >
+                {isSubscriptionSubmitting ? 'Enviando...' : subscription ? 'Inscrito' : 'Inscrever-se'}
               </Button>
             ) : !isAuthenticated ? (
               <Button to={ROUTES.LOGIN}>Entrar para participar</Button>
@@ -156,6 +188,18 @@ function ProjectDetailPage() {
             <p className="mt-3 text-lg font-semibold text-ink-900">{project.vacancies}</p>
           </article>
         </div>
+
+        {subscriptionSuccessMessage ? (
+          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+            {subscriptionSuccessMessage}
+          </div>
+        ) : null}
+
+        {subscriptionErrorMessage ? (
+          <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {subscriptionErrorMessage}
+          </div>
+        ) : null}
       </PageSection>
 
       <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
