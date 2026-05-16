@@ -3,13 +3,13 @@ import { USER_ROLES } from '../constants/auth';
 import AppLayout from '../layouts/AppLayout';
 import AuthLayout from '../layouts/AuthLayout';
 import DashboardOrganizationPage from '../pages/DashboardOrganizationPage';
-import DashboardVolunteerPage from '../pages/DashboardVolunteerPage';
 import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import ProjectDetailPage from '../pages/ProjectDetailPage';
 import ProjectsPage from '../pages/ProjectsPage';
 import RegisterPage from '../pages/RegisterPage';
+import VolunteerDashboardPage from '../pages/VolunteerDashboardPage';
 import GuestRoute from './GuestRoute';
 import ProtectedRoute from './ProtectedRoute';
 
@@ -27,7 +27,7 @@ export const router = createBrowserRouter([
       },
       {
         element: <ProtectedRoute allowedRoles={[USER_ROLES.VOLUNTARIO]} />,
-        children: [{ path: 'dashboard/voluntario', element: <DashboardVolunteerPage /> }],
+        children: [{ path: 'dashboard/voluntario', element: <VolunteerDashboardPage /> }],
       },
       { path: '*', element: <NotFoundPage /> },
     ],
