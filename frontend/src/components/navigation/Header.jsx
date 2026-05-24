@@ -4,6 +4,11 @@ import { useAuth } from '../../hooks/useAuth';
 import BrandLogo from '../common/BrandLogo';
 import Button from '../ui/Button';
 
+const profileLabels = {
+  ORGANIZACAO: 'Organização',
+  VOLUNTARIO: 'Voluntário',
+};
+
 function navigationClassName({ isActive }) {
   return isActive
     ? 'text-clay-700'
@@ -16,35 +21,35 @@ function Header() {
 
   return (
     <header className="border-b border-white/70 bg-sand-50/90 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex items-center justify-between gap-4">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+        <div className="flex shrink-0 items-center gap-3">
           <BrandLogo size="sm" />
           {isAuthenticated ? (
-            <span className="rounded-full bg-mist-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-forest-700">
-              {profile}
+            <span className="hidden rounded-full bg-mist-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-forest-700 sm:inline-flex">
+              {profileLabels[profile] ?? profile}
             </span>
           ) : null}
         </div>
 
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-          <nav className="flex flex-wrap items-center gap-4 text-sm font-semibold">
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-3 sm:gap-5">
+          <nav className="flex shrink-0 items-center gap-3 text-sm font-semibold sm:gap-4">
             <NavLink className={navigationClassName} to={ROUTES.HOME}>
-              Home
+              Início
             </NavLink>
             <NavLink className={navigationClassName} to={ROUTES.PROJECTS}>
               Projetos
             </NavLink>
             {dashboardPath ? (
               <NavLink className={navigationClassName} to={dashboardPath}>
-                Dashboard
+                Painel
               </NavLink>
             ) : null}
           </nav>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             {isAuthenticated ? (
               <>
-                <span className="text-sm text-slate-500">{email}</span>
+                <span className="hidden max-w-48 truncate text-sm text-slate-500 md:inline">{email}</span>
                 <Button onClick={logout} size="sm" variant="ghost">
                   Sair
                 </Button>

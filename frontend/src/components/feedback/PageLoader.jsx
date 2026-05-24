@@ -1,4 +1,4 @@
-function PageLoader({ title = 'Carregando...', description = 'Buscando informacoes do backend.' }) {
+function PageLoader({ title = 'Carregando...', description = 'Buscando informações.' }) {
   return (
     <section className="surface-card p-8 text-center">
       <div className="mx-auto max-w-xl space-y-4">

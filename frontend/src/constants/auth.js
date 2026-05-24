@@ -7,6 +7,6 @@ export const USER_ROLES = {
 };
 
 export const ROLE_OPTIONS = [
-  { value: USER_ROLES.VOLUNTARIO, label: 'Voluntario' },
-  { value: USER_ROLES.ORGANIZACAO, label: 'Organizacao' },
+  { value: USER_ROLES.VOLUNTARIO, label: 'Voluntário' },
+  { value: USER_ROLES.ORGANIZACAO, label: 'Organização' },
 ];

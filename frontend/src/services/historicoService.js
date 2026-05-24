@@ -13,7 +13,7 @@ function adaptHistorico(apiHistory) {
     statusLabel: formatEnumLabel(apiHistory.situacao),
     note: normalizeOptionalText(apiHistory.observacao),
     projectId,
-    projectTitle: apiHistory.tituloProjeto ?? 'Projeto nao informado',
+    projectTitle: apiHistory.tituloProjeto ?? 'Projeto não informado',
     projectPath: projectId ? getProjectDetailPath(projectId) : null,
     volunteerId: apiHistory.idVoluntario,
     volunteerName: apiHistory.nomeVoluntario,

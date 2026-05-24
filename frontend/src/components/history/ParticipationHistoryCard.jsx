@@ -28,7 +28,7 @@ function ParticipationHistoryCard({ history }) {
           </h3>
           {history.note ? (
             <div className="rounded-2xl border border-mist-200 bg-white/70 p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Observacao</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Observação</p>
               <p className="mt-2 text-base text-slate-600">{history.note}</p>
             </div>
           ) : null}

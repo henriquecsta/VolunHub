@@ -34,7 +34,7 @@ function OrganizationProjectCard({ actionState, onDelete, onStatusChange, projec
       <div className="mt-6 grid gap-3 border-t border-mist-200 pt-4 text-sm text-slate-500">
         <p>{project.city}, {project.state}</p>
         <p>{project.dateRangeLabel}</p>
-        <p>{subscriptionCount} inscricoes recebidas</p>
+        <p>{subscriptionCount} inscrições recebidas</p>
         {onStatusChange || isActionRunning ? (
           <div className="space-y-3 rounded-2xl border border-mist-200 bg-white/70 p-3">
             {onStatusChange ? (

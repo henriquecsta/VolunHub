@@ -4,9 +4,9 @@ import { ROUTES } from '../../constants/routes';
 import { cn } from '../../utils/cn';
 
 const sizeClassNames = {
-  sm: 'h-12 w-12',
-  md: 'h-16 w-16',
-  lg: 'h-24 w-24',
+  sm: 'h-14 w-14',
+  md: 'h-20 w-20',
+  lg: 'h-28 w-28',
 };
 
 function BrandLogo({ className, linkTo = ROUTES.HOME, size = 'md' }) {
@@ -14,7 +14,11 @@ function BrandLogo({ className, linkTo = ROUTES.HOME, size = 'md' }) {
     <>
       <img
         alt="VolunHub"
-        className={cn('object-contain', sizeClassNames[size], className)}
+        className={cn(
+          'rounded-lg border border-mist-200 bg-white object-contain p-1 shadow-sm',
+          sizeClassNames[size],
+          className,
+        )}
         src={logoUrl}
       />
       <span className="sr-only">VolunHub</span>

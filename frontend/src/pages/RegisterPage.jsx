@@ -61,7 +61,7 @@ function RegisterPage() {
         state: { registered: true, email: form.email.trim().toLowerCase() },
       });
     } catch (error) {
-      setErrorMessage(getErrorMessage(error, 'Nao foi possivel concluir o cadastro.'));
+      setErrorMessage(getErrorMessage(error, 'Não foi possível concluir o cadastro.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -91,7 +91,7 @@ function RegisterPage() {
           maxLength={150}
           name="nome"
           onChange={handleChange}
-          placeholder="Nome completo ou da organizacao"
+          placeholder="Nome completo ou da organização"
           required
           value={form.nome}
         />
@@ -100,11 +100,11 @@ function RegisterPage() {
           disabled={isSubmitting}
           error={formErrors.email}
           id="email"
-          label="Email"
+          label="E-mail"
           maxLength={150}
           name="email"
           onChange={handleChange}
-          placeholder="voce@exemplo.com"
+          placeholder="nome@exemplo.com"
           required
           type="email"
           value={form.email}
@@ -152,7 +152,7 @@ function RegisterPage() {
       </form>
 
       <p className="text-sm text-slate-600">
-        Ja possui conta?{' '}
+        Já possui conta?{' '}
         <Link className="font-semibold text-clay-700 hover:text-clay-600" to={ROUTES.LOGIN}>
           Entrar
         </Link>
@@ -162,7 +162,7 @@ function RegisterPage() {
 }
 
 function getNameLabel(profile) {
-  return profile === USER_ROLES.ORGANIZACAO ? 'Nome da organizacao' : 'Nome completo';
+  return profile === USER_ROLES.ORGANIZACAO ? 'Nome da organização' : 'Nome completo';
 }
 
 export default RegisterPage;

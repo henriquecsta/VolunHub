@@ -33,7 +33,7 @@ function VolunteerDashboardPage() {
       } catch (error) {
         if (!shouldIgnore) {
           setErrorMessage(
-            getErrorMessage(error, 'Nao foi possivel carregar suas inscricoes.'),
+            getErrorMessage(error, 'Não foi possível carregar suas inscrições.'),
           );
           setSubscriptions([]);
         }
@@ -65,26 +65,26 @@ function VolunteerDashboardPage() {
         actions={
           <>
             <Button to={ROUTES.DASHBOARD_VOLUNTEER_HISTORY} variant="ghost">
-              Ver historico
+              Ver histórico
             </Button>
             <Button to={ROUTES.PROJECTS}>Explorar oportunidades</Button>
           </>
         }
-        description={`Sessao protegida para ${email}. Acompanhe aqui suas inscricoes e o andamento de cada oportunidade.`}
-        eyebrow="Dashboard voluntario"
-        title="Suas inscricoes em um painel simples de acompanhar."
+        description={`Sessão protegida para ${email}. Acompanhe aqui suas inscrições e o andamento de cada oportunidade.`}
+        eyebrow="Painel do voluntário"
+        title="Suas inscrições em um painel simples de acompanhar."
       >
         <div className="grid gap-5 md:grid-cols-3">
-          <StatCard label="Inscricoes" value={subscriptions.length} hint="Projetos em que voce demonstrou interesse." />
-          <StatCard label="Pendentes" value={pendingCount} hint="Aguardando avaliacao da organizacao." />
-          <StatCard label="Aprovadas" value={approvedCount} hint="Participacoes confirmadas." />
+          <StatCard label="Inscrições" value={subscriptions.length} hint="Projetos em que você demonstrou interesse." />
+          <StatCard label="Pendentes" value={pendingCount} hint="Aguardando avaliação da organização." />
+          <StatCard label="Aprovadas" value={approvedCount} hint="Participações confirmadas." />
         </div>
       </PageSection>
 
       <section className="surface-card p-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="font-display text-2xl font-semibold text-ink-900">Minhas inscricoes</h2>
+            <h2 className="font-display text-2xl font-semibold text-ink-900">Minhas inscrições</h2>
             <p className="mt-2 text-slate-600">
               Acompanhe seus projetos inscritos e consulte os detalhes quando quiser.
             </p>
@@ -94,7 +94,7 @@ function VolunteerDashboardPage() {
               {isLoading ? 'Atualizando...' : 'Atualizar'}
             </Button>
             <Button to={ROUTES.DASHBOARD_VOLUNTEER_HISTORY} variant="ghost">
-              Historico
+              Histórico
             </Button>
             <Button to={ROUTES.PROJECTS} variant="ghost">
               Buscar projetos
@@ -105,14 +105,14 @@ function VolunteerDashboardPage() {
 
       {isLoading && !hasSubscriptions ? (
         <PageLoader
-          description="Consultando `GET /inscricoes/me` e preparando seus cards de acompanhamento."
-          title="Carregando suas inscricoes"
+          description="Buscando suas inscrições e preparando seus cards de acompanhamento."
+          title="Carregando suas inscrições"
         />
       ) : null}
 
       {isLoading && hasSubscriptions ? (
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          Atualizando suas inscricoes...
+          Atualizando suas inscrições...
         </div>
       ) : null}
 
@@ -120,7 +120,7 @@ function VolunteerDashboardPage() {
         <StatusPanel
           actions={<Button onClick={handleRefresh}>Tentar novamente</Button>}
           description={errorMessage}
-          title="Nao foi possivel carregar suas inscricoes"
+          title="Não foi possível carregar suas inscrições"
           tone="error"
         />
       ) : null}
@@ -128,8 +128,8 @@ function VolunteerDashboardPage() {
       {!isLoading && !errorMessage && !hasSubscriptions ? (
         <StatusPanel
           actions={<Button to={ROUTES.PROJECTS}>Explorar projetos</Button>}
-          description="Voce ainda nao possui inscricoes. Explore oportunidades ativas e escolha um projeto para participar."
-          title="Voce ainda nao possui inscricoes"
+          description="Você ainda não possui inscrições. Explore oportunidades ativas e escolha um projeto para participar."
+          title="Você ainda não possui inscrições"
         />
       ) : null}
 

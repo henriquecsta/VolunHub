@@ -2,9 +2,32 @@ function hasValue(value) {
   return value !== null && value !== undefined && value !== '';
 }
 
+const ENUM_LABELS = {
+  APROVADA: 'Aprovada',
+  ATIVO: 'Ativo',
+  CANCELADA: 'Cancelada',
+  CANCELADO: 'Cancelado',
+  CONCLUIDA: 'Concluída',
+  ENCERRADO: 'Encerrado',
+  FINALIZADA: 'Finalizada',
+  HIBRIDO: 'Híbrido',
+  ORGANIZACAO: 'Organização',
+  PENDENTE: 'Pendente',
+  PRESENCIAL: 'Presencial',
+  RECUSADA: 'Recusada',
+  REMOTO: 'Remoto',
+  VOLUNTARIO: 'Voluntário',
+};
+
 export function formatEnumLabel(value) {
   if (!hasValue(value)) {
-    return 'Nao informado';
+    return 'Não informado';
+  }
+
+  const normalizedValue = String(value).toUpperCase();
+
+  if (ENUM_LABELS[normalizedValue]) {
+    return ENUM_LABELS[normalizedValue];
   }
 
   return String(value)
@@ -16,7 +39,7 @@ export function formatEnumLabel(value) {
 
 export function formatDate(dateValue) {
   if (!hasValue(dateValue)) {
-    return 'Data nao informada';
+    return 'Data não informada';
   }
 
   const date = new Date(`${dateValue}T00:00:00`);
@@ -30,7 +53,7 @@ export function formatDate(dateValue) {
 
 export function formatDateTime(dateValue) {
   if (!hasValue(dateValue)) {
-    return 'Data nao informada';
+    return 'Data não informada';
   }
 
   const date = new Date(dateValue);
@@ -47,18 +70,18 @@ export function formatDateTime(dateValue) {
 
 export function formatDateRange(startDate, endDate) {
   if (!hasValue(startDate) && !hasValue(endDate)) {
-    return 'Periodo nao informado';
+    return 'Período não informado';
   }
 
   if (!hasValue(startDate)) {
-    return `Ate ${formatDate(endDate)}`;
+    return `Até ${formatDate(endDate)}`;
   }
 
   if (!hasValue(endDate) || startDate === endDate) {
     return formatDate(startDate);
   }
 
-  return `${formatDate(startDate)} ate ${formatDate(endDate)}`;
+  return `${formatDate(startDate)} até ${formatDate(endDate)}`;
 }
 
 export function truncateText(text, maxLength = 140) {

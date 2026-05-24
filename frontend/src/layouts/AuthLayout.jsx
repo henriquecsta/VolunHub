@@ -15,22 +15,22 @@ function AuthLayout() {
                 Voluntariado conectado
               </span>
               <h1 className="font-display text-4xl font-semibold leading-tight">
-                Uma plataforma para aproximar projetos sociais e pessoas voluntarias.
+                Uma plataforma para aproximar projetos sociais e pessoas voluntárias.
               </h1>
               <p className="max-w-xl text-lg text-emerald-50/85">
-                Publique oportunidades, acompanhe inscricoes e organize historicos de participacao em um unico ambiente.
+                Publique oportunidades, acompanhe inscrições e organize históricos de participação em um único ambiente.
               </p>
             </div>
           </div>
 
           <div className="mt-10 grid gap-4 sm:grid-cols-2">
             <div className="rounded-3xl border border-white/15 bg-white/10 p-5">
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-emerald-100">Voluntarios</p>
-              <p className="mt-2 text-sm text-emerald-50/80">Buscam projetos, realizam inscricoes e acompanham historico.</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-emerald-100">Voluntários</p>
+              <p className="mt-2 text-sm text-emerald-50/80">Buscam projetos, realizam inscrições e acompanham histórico.</p>
             </div>
             <div className="rounded-3xl border border-white/15 bg-white/10 p-5">
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-emerald-100">Organizacoes</p>
-              <p className="mt-2 text-sm text-emerald-50/80">Publicam projetos e gerenciam inscricoes recebidas.</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-emerald-100">Organizações</p>
+              <p className="mt-2 text-sm text-emerald-50/80">Publicam projetos e gerenciam inscrições recebidas.</p>
             </div>
           </div>
         </section>

@@ -33,7 +33,7 @@ function ParticipationHistoryPage() {
       } catch (error) {
         if (!shouldIgnore) {
           setErrorMessage(
-            getErrorMessage(error, 'Nao foi possivel carregar seu historico.'),
+            getErrorMessage(error, 'Não foi possível carregar seu histórico.'),
           );
           setHistoryEntries([]);
         }
@@ -66,7 +66,7 @@ function ParticipationHistoryPage() {
         actions={
           <>
             <Button to={ROUTES.DASHBOARD_VOLUNTEER} variant="ghost">
-              Voltar ao dashboard
+              Voltar ao painel
             </Button>
             <Button disabled={isLoading} onClick={handleRefresh} variant="ghost">
               {isLoading ? 'Atualizando...' : 'Atualizar'}
@@ -74,27 +74,27 @@ function ParticipationHistoryPage() {
             <Button to={ROUTES.PROJECTS}>Explorar oportunidades</Button>
           </>
         }
-        description={`Sessao protegida para ${email}. Consulte aqui os registros consolidados das suas participacoes.`}
-        eyebrow="Historico"
-        title="Seu historico de participacao."
+        description={`Sessão protegida para ${email}. Consulte aqui os registros consolidados das suas participações.`}
+        eyebrow="Histórico"
+        title="Seu histórico de participação."
       >
         <div className="grid gap-5 md:grid-cols-3">
-          <StatCard label="Registros" value={historyEntries.length} hint="Participacoes registradas por organizacoes." />
-          <StatCard label="Concluidos" value={completedCount} hint="Registros com situacao finalizada ou aprovada." />
-          <StatCard label="Observacoes" value={notesCount} hint={`Ultimo registro: ${lastRecordLabel}.`} />
+          <StatCard label="Registros" value={historyEntries.length} hint="Participações registradas por organizações." />
+          <StatCard label="Concluídos" value={completedCount} hint="Registros com situação finalizada ou aprovada." />
+          <StatCard label="Observações" value={notesCount} hint={`Último registro: ${lastRecordLabel}.`} />
         </div>
       </PageSection>
 
       {isLoading && !hasHistoryEntries ? (
         <PageLoader
-          description="Buscando seus registros de participacao mais recentes."
-          title="Carregando historico"
+          description="Buscando seus registros de participação mais recentes."
+          title="Carregando histórico"
         />
       ) : null}
 
       {isLoading && hasHistoryEntries ? (
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          Atualizando seu historico...
+          Atualizando seu histórico...
         </div>
       ) : null}
 
@@ -102,16 +102,16 @@ function ParticipationHistoryPage() {
         <StatusPanel
           actions={<Button onClick={handleRefresh}>Tentar novamente</Button>}
           description={errorMessage}
-          title="Nao foi possivel carregar o historico"
+          title="Não foi possível carregar o histórico"
           tone="error"
         />
       ) : null}
 
       {!isLoading && !errorMessage && !hasHistoryEntries ? (
         <StatusPanel
-          actions={<Button to={ROUTES.DASHBOARD_VOLUNTEER}>Ver minhas inscricoes</Button>}
-          description="Ainda nao ha participacoes registradas para o seu usuario. Quando uma organizacao registrar sua participacao, ela aparecera aqui."
-          title="Nenhum historico encontrado"
+          actions={<Button to={ROUTES.DASHBOARD_VOLUNTEER}>Ver minhas inscrições</Button>}
+          description="Ainda não há participações registradas para o seu usuário. Quando uma organização registrar sua participação, ela aparecerá aqui."
+          title="Nenhum histórico encontrado"
         />
       ) : null}
 

@@ -52,7 +52,7 @@ function getFeedback({
     return {
       tone: 'info',
       title: 'Entre para participar',
-      description: 'Use uma conta de voluntario para enviar sua inscricao neste projeto.',
+      description: 'Use uma conta de voluntário para enviar sua inscrição neste projeto.',
     };
   }
 
@@ -63,15 +63,15 @@ function getFeedback({
   if (projectStatus !== 'ATIVO') {
     return {
       tone: 'warning',
-      title: 'Inscricoes indisponiveis',
-      description: 'Este projeto nao esta aceitando novas inscricoes no momento.',
+      title: 'Inscrições indisponíveis',
+      description: 'Este projeto não está aceitando novas inscrições no momento.',
     };
   }
 
   if (errorMessage) {
     return {
       tone: 'error',
-      title: 'Nao foi possivel concluir a inscricao',
+      title: 'Não foi possível concluir a inscrição',
       description: errorMessage,
     };
   }
@@ -79,23 +79,23 @@ function getFeedback({
   if (isSubmitting) {
     return {
       tone: 'info',
-      title: 'Enviando inscricao',
-      description: 'Estamos registrando sua participacao com seguranca.',
+      title: 'Enviando inscrição',
+      description: 'Estamos registrando sua participação com segurança.',
     };
   }
 
   if (isChecking) {
     return {
       tone: 'info',
-      title: 'Verificando sua inscricao',
-      description: 'Estamos conferindo se voce ja participa deste projeto.',
+      title: 'Verificando sua inscrição',
+      description: 'Estamos conferindo se você já participa deste projeto.',
     };
   }
 
   if (subscription) {
     return {
       tone: 'success',
-      title: successMessage ? 'Inscricao enviada' : 'Voce ja esta inscrito',
+      title: successMessage ? 'Inscrição enviada' : 'Você já está inscrito',
       description: successMessage || `Status atual: ${subscription.statusLabel}.`,
     };
   }

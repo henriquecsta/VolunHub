@@ -73,9 +73,9 @@ function adaptProjeto(apiProject) {
     status: apiProject.status,
     statusLabel: formatEnumLabel(apiProject.status),
     categoryId: apiProject.idCategoria,
-    category: apiProject.nomeCategoria ?? 'Categoria nao informada',
+    category: apiProject.nomeCategoria ?? 'Categoria não informada',
     organizationId: apiProject.idOrganizacao,
-    organization: apiProject.nomeOrganizacao ?? 'Organizacao nao informada',
+    organization: apiProject.nomeOrganizacao ?? 'Organização não informada',
   };
 }
 
@@ -217,7 +217,7 @@ function normalizeProjectId(idProjeto) {
   const normalizedId = Number(idProjeto);
 
   if (!Number.isInteger(normalizedId) || normalizedId <= 0) {
-    throw new Error('Projeto invalido.');
+    throw new Error('Projeto inválido.');
   }
 
   return normalizedId;
@@ -227,7 +227,7 @@ function normalizeProjectStatusForUpdate(status) {
   const normalizedStatus = normalizeStatus(status);
 
   if (!PROJECT_STATUS_VALUES.includes(normalizedStatus)) {
-    throw new Error('Status de projeto invalido.');
+    throw new Error('Status de projeto inválido.');
   }
 
   return normalizedStatus;

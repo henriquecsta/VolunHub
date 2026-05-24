@@ -68,7 +68,7 @@ function ProjectDetailPage() {
         }
 
         setErrorMessage(
-          getErrorMessage(error, 'Nao foi possivel carregar os detalhes do projeto.'),
+          getErrorMessage(error, 'Não foi possível carregar os detalhes do projeto.'),
         );
         setProject(null);
       } finally {
@@ -107,7 +107,7 @@ function ProjectDetailPage() {
       } catch (error) {
         if (!shouldIgnore && error?.response?.status !== 401) {
           setSubscriptionErrorMessage(
-            getErrorMessage(error, 'Nao foi possivel verificar sua inscricao neste projeto.'),
+            getErrorMessage(error, 'Não foi possível verificar sua inscrição neste projeto.'),
           );
         }
       } finally {
@@ -159,9 +159,9 @@ function ProjectDetailPage() {
       const response = await inscreverEmProjeto(project.id);
 
       setSubscription(response);
-      setSubscriptionSuccessMessage('Inscricao enviada. Agora e so aguardar a avaliacao da organizacao.');
+      setSubscriptionSuccessMessage('Inscrição enviada. Agora é só aguardar a avaliação da organização.');
     } catch (error) {
-      const message = getErrorMessage(error, 'Nao foi possivel realizar sua inscricao neste projeto.');
+      const message = getErrorMessage(error, 'Não foi possível realizar sua inscrição neste projeto.');
 
       if (isDuplicateSubscriptionError(error, message)) {
         setSubscription({
@@ -188,7 +188,7 @@ function ProjectDetailPage() {
   if (isLoading) {
     return (
       <PageLoader
-        description="Consultando o endpoint `GET /projetos/{id}` para montar os detalhes do projeto."
+        description="Buscando as informações mais recentes do projeto."
         title="Carregando detalhes do projeto"
       />
     );
@@ -200,11 +200,11 @@ function ProjectDetailPage() {
         actions={
           <>
             <Button to={ROUTES.PROJECTS}>Voltar para projetos</Button>
-            <Button to={ROUTES.HOME} variant="ghost">Ir para home</Button>
+            <Button to={ROUTES.HOME} variant="ghost">Ir para início</Button>
           </>
         }
-        description="O projeto solicitado nao foi encontrado ou pode ter sido removido da base."
-        title="Projeto nao encontrado"
+        description="O projeto solicitado não foi encontrado ou pode ter sido removido."
+        title="Projeto não encontrado"
       />
     );
   }
@@ -219,7 +219,7 @@ function ProjectDetailPage() {
           </>
         }
         description={errorMessage}
-        title="Nao foi possivel carregar este projeto"
+        title="Não foi possível carregar este projeto"
         tone="error"
       />
     );
@@ -262,7 +262,7 @@ function ProjectDetailPage() {
       >
         <div className="grid gap-5 md:grid-cols-4">
           <article className="surface-card p-5">
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">Organizacao</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">Organização</p>
             <p className="mt-3 text-lg font-semibold text-ink-900">{project.organization}</p>
           </article>
           <article className="surface-card p-5">
@@ -270,7 +270,7 @@ function ProjectDetailPage() {
             <p className="mt-3 text-lg font-semibold text-ink-900">{project.participationTypeLabel}</p>
           </article>
           <article className="surface-card p-5">
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">Periodo</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">Período</p>
             <p className="mt-3 text-lg font-semibold text-ink-900">{project.dateRangeLabel}</p>
           </article>
           <article className="surface-card p-5">
@@ -293,7 +293,7 @@ function ProjectDetailPage() {
 
       <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <article className="surface-card p-8">
-          <h2 className="font-display text-2xl font-semibold text-ink-900">Descricao</h2>
+          <h2 className="font-display text-2xl font-semibold text-ink-900">Descrição</h2>
           <p className="mt-4 text-lg leading-8 text-slate-600">{project.description}</p>
         </article>
 
@@ -326,7 +326,7 @@ function getSubscriptionButtonLabel({
   subscription,
 }) {
   if (projectStatus !== 'ATIVO') {
-    return 'Inscricoes indisponiveis';
+    return 'Inscrições indisponíveis';
   }
 
   if (isSubscriptionChecking) {
@@ -338,7 +338,7 @@ function getSubscriptionButtonLabel({
   }
 
   if (subscription) {
-    return 'Ja inscrito';
+    return 'Já inscrito';
   }
 
   return 'Inscrever-se';
@@ -347,7 +347,8 @@ function getSubscriptionButtonLabel({
 function isDuplicateSubscriptionError(error, message) {
   return (
     error?.response?.status === 400 &&
-    message.toLowerCase().includes('ja esta inscrito')
+    (message.toLowerCase().includes('já está inscrito') ||
+      message.toLowerCase().includes('ja esta inscrito'))
   );
 }
 

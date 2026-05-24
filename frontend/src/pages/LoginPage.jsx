@@ -63,7 +63,7 @@ function LoginPage() {
 
       navigate(destination, { replace: true });
     } catch (error) {
-      setErrorMessage(getErrorMessage(error, 'Nao foi possivel entrar. Confira email e senha.'));
+      setErrorMessage(getErrorMessage(error, 'Não foi possível entrar. Confira e-mail e senha.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -75,12 +75,12 @@ function LoginPage() {
         <BrandLogo linkTo={null} size="md" />
         <p className="text-sm font-semibold uppercase tracking-[0.16em] text-clay-700">Acesso</p>
         <h2 className="font-display text-3xl font-semibold text-ink-900">Entrar no VolunHub</h2>
-        <p className="text-slate-600">Acesse sua conta para acompanhar projetos, inscricoes e acoes da sua organizacao.</p>
+        <p className="text-slate-600">Acesse sua conta para acompanhar projetos, inscrições e ações da sua organização.</p>
       </div>
 
       {location.state?.registered ? (
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          Cadastro realizado. Agora voce ja pode entrar.
+          Cadastro realizado. Agora você já pode entrar.
         </div>
       ) : null}
 
@@ -96,11 +96,11 @@ function LoginPage() {
           disabled={isSubmitting}
           error={formErrors.email}
           id="email"
-          label="Email"
+          label="E-mail"
           maxLength={150}
           name="email"
           onChange={handleChange}
-          placeholder="voce@exemplo.com"
+          placeholder="nome@exemplo.com"
           required
           type="email"
           value={form.email}
@@ -127,7 +127,7 @@ function LoginPage() {
       </form>
 
       <p className="text-sm text-slate-600">
-        Ainda nao possui conta?{' '}
+        Ainda não possui conta?{' '}
         <Link className="font-semibold text-clay-700 hover:text-clay-600" to={ROUTES.REGISTER}>
           Cadastre-se
         </Link>

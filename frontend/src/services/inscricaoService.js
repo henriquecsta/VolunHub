@@ -6,7 +6,7 @@ function normalizeProjectId(idProjeto) {
   const normalizedId = Number(idProjeto);
 
   if (!Number.isInteger(normalizedId) || normalizedId <= 0) {
-    throw new Error('Projeto invalido para inscricao.');
+    throw new Error('Projeto inválido para inscrição.');
   }
 
   return normalizedId;
@@ -16,7 +16,7 @@ function normalizeSubscriptionId(idInscricao) {
   const normalizedId = Number(idInscricao);
 
   if (!Number.isInteger(normalizedId) || normalizedId <= 0) {
-    throw new Error('Inscricao invalida para atualizacao.');
+    throw new Error('Inscrição inválida para atualização.');
   }
 
   return normalizedId;
@@ -31,7 +31,7 @@ function adaptInscricao(apiInscricao, project = null) {
     statusLabel: formatEnumLabel(apiInscricao.status),
     projectId: apiInscricao.idProjeto,
     projectTitle: apiInscricao.tituloProjeto,
-    projectSummary: project?.summary ?? 'Resumo do projeto indisponivel no momento.',
+    projectSummary: project?.summary ?? 'Resumo do projeto indisponível no momento.',
     projectStatus: apiInscricao.statusProjeto,
     projectStatusLabel: formatEnumLabel(apiInscricao.statusProjeto),
     volunteerId: apiInscricao.idVoluntario,

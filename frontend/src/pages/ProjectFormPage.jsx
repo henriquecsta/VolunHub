@@ -17,7 +17,7 @@ import { getErrorMessage } from '../utils/http';
 const PARTICIPATION_OPTIONS = [
   { value: 'PRESENCIAL', label: 'Presencial' },
   { value: 'REMOTO', label: 'Remoto' },
-  { value: 'HIBRIDO', label: 'Hibrido' },
+  { value: 'HIBRIDO', label: 'Híbrido' },
 ];
 
 const INITIAL_FORM = {
@@ -68,7 +68,7 @@ function ProjectFormPage() {
         if (!shouldIgnore) {
           setCategories([]);
           setCategoriesErrorMessage(
-            getErrorMessage(error, 'Nao foi possivel carregar as categorias.'),
+            getErrorMessage(error, 'Não foi possível carregar as categorias.'),
           );
         }
       } finally {
@@ -95,7 +95,7 @@ function ProjectFormPage() {
       }
 
       if (!projectId || Number.isNaN(Number(projectId))) {
-        setLoadErrorMessage('Projeto invalido para edicao.');
+        setLoadErrorMessage('Projeto inválido para edição.');
         setIsLoadingProject(false);
         return;
       }
@@ -111,14 +111,14 @@ function ProjectFormPage() {
         }
 
         if (Number(project.organizationId) !== Number(idUsuario)) {
-          setLoadErrorMessage('Voce so pode editar projetos criados pela sua organizacao.');
+          setLoadErrorMessage('Você só pode editar projetos criados pela sua organização.');
           return;
         }
 
         setForm(mapProjectToForm(project));
       } catch (error) {
         if (!shouldIgnore) {
-          setLoadErrorMessage(getErrorMessage(error, 'Nao foi possivel carregar este projeto.'));
+          setLoadErrorMessage(getErrorMessage(error, 'Não foi possível carregar este projeto.'));
         }
       } finally {
         if (!shouldIgnore) {
@@ -180,7 +180,7 @@ function ProjectFormPage() {
         navigate(ROUTES.DASHBOARD_ORGANIZATION, { replace: true });
       }, 700);
     } catch (error) {
-      setErrorMessage(getErrorMessage(error, 'Nao foi possivel salvar este projeto.'));
+      setErrorMessage(getErrorMessage(error, 'Não foi possível salvar este projeto.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -189,8 +189,8 @@ function ProjectFormPage() {
   if (isLoadingProject || isLoadingCategories) {
     return (
       <PageLoader
-        description="Buscando dados necessarios para montar o formulario."
-        title={isEditMode ? 'Carregando projeto' : 'Carregando formulario'}
+        description="Buscando dados necessários para montar o formulário."
+        title={isEditMode ? 'Carregando projeto' : 'Carregando formulário'}
       />
     );
   }
@@ -200,7 +200,7 @@ function ProjectFormPage() {
       <StatusPanel
         actions={
           <>
-            <Button to={ROUTES.DASHBOARD_ORGANIZATION}>Voltar ao dashboard</Button>
+            <Button to={ROUTES.DASHBOARD_ORGANIZATION}>Voltar ao painel</Button>
             {categoriesErrorMessage ? (
               <Button onClick={() => setCategoriesRetryCount((currentCount) => currentCount + 1)} variant="ghost">
                 Tentar novamente
@@ -211,7 +211,7 @@ function ProjectFormPage() {
           </>
         }
         description={loadErrorMessage || categoriesErrorMessage}
-        title="Nao foi possivel carregar o formulario"
+        title="Não foi possível carregar o formulário"
         tone="error"
       />
     );
@@ -229,7 +229,7 @@ function ProjectFormPage() {
     <div className="space-y-8">
       <PageSection
         actions={<Button to={ROUTES.DASHBOARD_ORGANIZATION} variant="ghost">Cancelar</Button>}
-        description="Preencha os dados principais da oportunidade para publicar ou atualizar um projeto da organizacao."
+        description="Preencha os dados principais da oportunidade para publicar ou atualizar um projeto da organização."
         eyebrow="Projetos"
         title={isEditMode ? 'Editar projeto' : 'Novo projeto'}
       />
@@ -252,11 +252,11 @@ function ProjectFormPage() {
             error={formErrors.titulo}
             disabled={isSubmitting}
             id="titulo"
-            label="Titulo"
+            label="Título"
             maxLength={150}
             name="titulo"
             onChange={handleChange}
-            placeholder="Ex.: Mutirao de arrecadacao"
+            placeholder="Ex.: Mutirão de arrecadação"
             required
             value={form.titulo}
           />
@@ -276,10 +276,10 @@ function ProjectFormPage() {
           error={formErrors.descricao}
           disabled={isSubmitting}
           id="descricao"
-          label="Descricao"
+          label="Descrição"
           name="descricao"
           onChange={handleChange}
-          placeholder="Descreva o objetivo, atividades e perfil esperado dos voluntarios."
+          placeholder="Descreva o objetivo, as atividades e o perfil esperado dos voluntários."
           required
           value={form.descricao}
         />
@@ -293,7 +293,7 @@ function ProjectFormPage() {
             maxLength={255}
             name="local"
             onChange={handleChange}
-            placeholder="Endereco ou referencia"
+            placeholder="Endereço ou referência"
             required
             value={form.local}
           />
@@ -338,7 +338,7 @@ function ProjectFormPage() {
             error={formErrors.dataInicio}
             disabled={isSubmitting}
             id="dataInicio"
-            label="Data inicio"
+            label="Data de início"
             name="dataInicio"
             onChange={handleChange}
             required
@@ -349,7 +349,7 @@ function ProjectFormPage() {
             error={formErrors.dataFim}
             disabled={isSubmitting}
             id="dataFim"
-            label="Data fim"
+            label="Data de fim"
             name="dataFim"
             onChange={handleChange}
             required
@@ -400,11 +400,11 @@ function validateProjectForm(form) {
   const categoryId = Number(form.idCategoria);
 
   if (!form.titulo.trim()) {
-    errors.titulo = 'Informe o titulo.';
+    errors.titulo = 'Informe o título.';
   }
 
   if (!form.descricao.trim()) {
-    errors.descricao = 'Informe a descricao.';
+    errors.descricao = 'Informe a descrição.';
   }
 
   if (!form.local.trim()) {
@@ -420,7 +420,7 @@ function validateProjectForm(form) {
   }
 
   if (!form.dataInicio) {
-    errors.dataInicio = 'Informe a data de inicio.';
+    errors.dataInicio = 'Informe a data de início.';
   }
 
   if (!form.dataFim) {
@@ -428,7 +428,7 @@ function validateProjectForm(form) {
   }
 
   if (form.dataInicio && form.dataFim && form.dataFim < form.dataInicio) {
-    errors.dataFim = 'Data fim nao pode ser anterior a data inicio.';
+    errors.dataFim = 'A data de fim não pode ser anterior à data de início.';
   }
 
   if (!Number.isInteger(vacancies) || vacancies <= 0) {
@@ -436,7 +436,7 @@ function validateProjectForm(form) {
   }
 
   if (!Number.isInteger(categoryId) || categoryId <= 0) {
-    errors.idCategoria = 'Informe uma categoria valida.';
+    errors.idCategoria = 'Informe uma categoria válida.';
   }
 
   return errors;

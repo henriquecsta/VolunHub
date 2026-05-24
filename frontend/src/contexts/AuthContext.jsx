@@ -49,7 +49,7 @@ export function AuthProvider({ children }) {
     const storedAuth = setStoredAuth(normalizedAuth);
 
     if (!storedAuth) {
-      throw new Error('Nao foi possivel validar a sessao retornada pelo servidor.');
+      throw new Error('Não foi possível validar a sessão retornada pelo servidor.');
     }
 
     setAuth(storedAuth);

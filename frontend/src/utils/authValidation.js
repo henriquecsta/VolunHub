@@ -8,15 +8,15 @@ function normalizeText(value) {
 
 function validateEmail(email) {
   if (!email) {
-    return 'Informe o email.';
+    return 'Informe o e-mail.';
   }
 
   if (email.length > 150) {
-    return 'Email deve ter no maximo 150 caracteres.';
+    return 'E-mail deve ter no máximo 150 caracteres.';
   }
 
   if (!EMAIL_PATTERN.test(email)) {
-    return 'Informe um email valido.';
+    return 'Informe um e-mail válido.';
   }
 
   return '';
@@ -56,14 +56,14 @@ export function validateRegisterForm(form) {
     nome: !nome
       ? 'Informe o nome.'
       : nome.length > 150
-        ? 'Nome deve ter no maximo 150 caracteres.'
+        ? 'Nome deve ter no máximo 150 caracteres.'
         : '',
     email: validateEmail(normalizeText(form.email)),
     senha: validatePassword(form.senha),
     perfil: !Object.values(USER_ROLES).includes(perfil)
-      ? 'Escolha voluntario ou organizacao.'
+      ? 'Escolha voluntário ou organização.'
       : '',
-    telefone: telefone.length > 20 ? 'Telefone deve ter no maximo 20 caracteres.' : '',
+    telefone: telefone.length > 20 ? 'Telefone deve ter no máximo 20 caracteres.' : '',
   };
 
   return Object.fromEntries(Object.entries(errors).filter(([, message]) => Boolean(message)));

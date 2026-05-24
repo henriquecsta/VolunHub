@@ -70,7 +70,7 @@ function OrganizationDashboardPage() {
       } catch (error) {
         if (!shouldIgnore) {
           setErrorMessage(
-            getErrorMessage(error, 'Nao foi possivel carregar o dashboard da organizacao.'),
+            getErrorMessage(error, 'Não foi possível carregar o painel da organização.'),
           );
           setProjects([]);
           setSubscriptions([]);
@@ -104,13 +104,13 @@ function OrganizationDashboardPage() {
     }
 
     if (!canManageProject(project, idUsuario)) {
-      setProjectActionErrorMessage('Voce so pode excluir projetos criados pela sua organizacao.');
+      setProjectActionErrorMessage('Você só pode excluir projetos criados pela sua organização.');
       setProjectActionSuccessMessage('');
       return;
     }
 
     const confirmed = window.confirm(
-      `Excluir o projeto "${project.title}"? Esta acao nao pode ser desfeita.`,
+      `Excluir o projeto "${project.title}"? Esta ação não pode ser desfeita.`,
     );
 
     if (!confirmed) {
@@ -138,12 +138,12 @@ function OrganizationDashboardPage() {
         delete nextSubscriptionsByProjectId[project.id];
         return nextSubscriptionsByProjectId;
       });
-      setProjectActionSuccessMessage(`Projeto "${project.title}" excluido com sucesso.`);
+      setProjectActionSuccessMessage(`Projeto "${project.title}" excluído com sucesso.`);
     } catch (error) {
       setProjectActionErrorMessage(
         getErrorMessage(
           error,
-          'Nao foi possivel excluir este projeto. Se houver registros vinculados, altere o status para Encerrado ou Cancelado.',
+          'Não foi possível excluir este projeto. Se houver registros vinculados, altere o status para Encerrado ou Cancelado.',
         ),
       );
     } finally {
@@ -161,7 +161,7 @@ function OrganizationDashboardPage() {
     }
 
     if (!canManageProject(project, idUsuario)) {
-      setProjectActionErrorMessage('Voce so pode alterar projetos criados pela sua organizacao.');
+      setProjectActionErrorMessage('Você só pode alterar projetos criados pela sua organização.');
       setProjectActionSuccessMessage('');
       return;
     }
@@ -199,7 +199,7 @@ function OrganizationDashboardPage() {
       );
     } catch (error) {
       setProjectActionErrorMessage(
-        getErrorMessage(error, 'Nao foi possivel atualizar o status deste projeto.'),
+        getErrorMessage(error, 'Não foi possível atualizar o status deste projeto.'),
       );
     } finally {
       setProjectActionsById((currentActions) => {
@@ -244,12 +244,12 @@ function OrganizationDashboardPage() {
       }));
       setActionSuccessMessage(
         status === 'APROVADA'
-          ? 'Inscricao aprovada com sucesso.'
-          : 'Inscricao recusada com sucesso.',
+          ? 'Inscrição aprovada com sucesso.'
+          : 'Inscrição recusada com sucesso.',
       );
     } catch (error) {
       setActionErrorMessage(
-        getErrorMessage(error, 'Nao foi possivel atualizar esta inscricao.'),
+        getErrorMessage(error, 'Não foi possível atualizar esta inscrição.'),
       );
     } finally {
       setActionInProgress(null);
@@ -270,41 +270,41 @@ function OrganizationDashboardPage() {
             <Button to={ROUTES.PROJECTS}>Ver projetos</Button>
           </>
         }
-        description={`Sessao protegida para ${email}. Gerencie aqui os projetos publicados e as inscricoes recebidas.`}
-        eyebrow="Dashboard organizacao"
-        title="Um painel para acompanhar projetos e voluntarios interessados."
+        description={`Sessão protegida para ${email}. Gerencie aqui os projetos publicados e as inscrições recebidas.`}
+        eyebrow="Painel da organização"
+        title="Um painel para acompanhar projetos e voluntários interessados."
       >
         <div className="grid gap-5 md:grid-cols-3">
-          <StatCard label="Projetos" value={projects.length} hint="Projetos publicados pela organizacao." />
-          <StatCard label="Inscricoes" value={subscriptions.length} hint="Voluntarios aguardando acompanhamento." />
-          <StatCard label="Pendentes" value={pendingCount} hint="Inscricoes que ainda precisam de decisao." />
+          <StatCard label="Projetos" value={projects.length} hint="Projetos publicados pela organização." />
+          <StatCard label="Inscrições" value={subscriptions.length} hint="Voluntários aguardando acompanhamento." />
+          <StatCard label="Pendentes" value={pendingCount} hint="Inscrições que ainda precisam de decisão." />
         </div>
       </PageSection>
 
       <section className="surface-card p-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="font-display text-2xl font-semibold text-ink-900">Gestao de inscricoes</h2>
+            <h2 className="font-display text-2xl font-semibold text-ink-900">Gestão de inscrições</h2>
             <p className="mt-2 text-slate-600">
-              Acompanhe as inscricoes recebidas e organize a fila de avaliacao.
+              Acompanhe as inscrições recebidas e organize a fila de avaliação.
             </p>
           </div>
           <Button to={ROUTES.PROJECTS} variant="ghost">
-            Consultar listagem publica
+            Consultar listagem pública
           </Button>
         </div>
       </section>
 
       {isLoading && !hasProjects && !hasSubscriptions ? (
         <PageLoader
-          description="Consultando `GET /projetos` e `GET /inscricoes/projeto/{id}` para montar a visao da organizacao."
-          title="Carregando dashboard da organizacao"
+          description="Buscando projetos publicados e inscrições recebidas."
+          title="Carregando painel da organização"
         />
       ) : null}
 
       {isLoading && (hasProjects || hasSubscriptions) ? (
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          Atualizando projetos e inscricoes...
+          Atualizando projetos e inscrições...
         </div>
       ) : null}
 
@@ -312,7 +312,7 @@ function OrganizationDashboardPage() {
         <StatusPanel
           actions={<Button onClick={handleRefresh}>Tentar novamente</Button>}
           description={errorMessage}
-          title="Nao foi possivel carregar o dashboard"
+          title="Não foi possível carregar o painel"
           tone="error"
         />
       ) : null}
@@ -327,7 +327,7 @@ function OrganizationDashboardPage() {
       {!isLoading && !errorMessage && !hasProjects ? (
         <StatusPanel
           actions={<Button to={ROUTES.PROJECTS}>Consultar projetos</Button>}
-          description="Ainda nao encontramos projetos vinculados a esta organizacao. Assim que houver projetos publicados, eles aparecem aqui."
+          description="Ainda não encontramos projetos vinculados a esta organização. Assim que houver projetos publicados, eles aparecerão aqui."
           title="Nenhum projeto publicado"
         />
       ) : null}
@@ -353,14 +353,14 @@ function OrganizationDashboardPage() {
       {!isLoading && !errorMessage && hasProjects && !hasSubscriptions ? (
         <StatusPanel
           actions={<Button onClick={handleRefresh}>Atualizar</Button>}
-          description="Seus projetos ainda nao receberam inscricoes de voluntarios."
-          title="Nenhuma inscricao recebida"
+          description="Seus projetos ainda não receberam inscrições de voluntários."
+          title="Nenhuma inscrição recebida"
         />
       ) : null}
 
       {!errorMessage && hasSubscriptions ? (
         <section className="space-y-4">
-          <h2 className="font-display text-2xl font-semibold text-ink-900">Inscricoes recebidas</h2>
+          <h2 className="font-display text-2xl font-semibold text-ink-900">Inscrições recebidas</h2>
           {actionSuccessMessage ? (
             <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
               {actionSuccessMessage}

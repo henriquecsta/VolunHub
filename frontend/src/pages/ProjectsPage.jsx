@@ -81,7 +81,7 @@ function ProjectsPage() {
         if (!shouldIgnore) {
           setCategories([]);
           setCategoriesErrorMessage(
-            getErrorMessage(error, 'Nao foi possivel carregar as categorias.'),
+            getErrorMessage(error, 'Não foi possível carregar as categorias.'),
           );
         }
       } finally {
@@ -143,7 +143,7 @@ function ProjectsPage() {
         }
 
         setErrorMessage(
-          getErrorMessage(error, 'Nao foi possivel carregar os projetos no momento.'),
+          getErrorMessage(error, 'Não foi possível carregar os projetos no momento.'),
         );
         setProjectPage((currentPage) => ({
           ...currentPage,
@@ -225,10 +225,10 @@ function ProjectsPage() {
         >
           <Input
             id="termo"
-            label="Busca rapida"
+            label="Busca rápida"
             name="termo"
             onChange={updateField}
-            placeholder="Titulo, descricao ou causa"
+            placeholder="Título, descrição ou causa"
             value={filters.termo}
           />
           <Input
@@ -236,7 +236,7 @@ function ProjectsPage() {
             label="Cidade ou UF"
             name="local"
             onChange={updateField}
-            placeholder="Ex.: Sao Paulo ou SP"
+            placeholder="Ex.: São Paulo ou SP"
             value={filters.local}
           />
           <Select
@@ -277,7 +277,7 @@ function ProjectsPage() {
       {isLoading && !projectPage.items.length ? (
         <div className="space-y-6">
           <PageLoader
-            description="Buscando oportunidades disponiveis para a listagem publica."
+            description="Buscando oportunidades disponíveis para a listagem pública."
             title="Carregando projetos"
           />
           <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -292,7 +292,7 @@ function ProjectsPage() {
         <StatusPanel
           actions={<Button onClick={handleRetry}>Tentar novamente</Button>}
           description={errorMessage}
-          title="Nao foi possivel carregar a listagem"
+          title="Não foi possível carregar a listagem"
           tone="error"
         />
       ) : null}
@@ -300,7 +300,7 @@ function ProjectsPage() {
       {!isLoading && !errorMessage && projectPage.isEmpty ? (
         <StatusPanel
           actions={<Button onClick={handleResetFilters}>Limpar filtros</Button>}
-          description="Nenhum projeto foi encontrado com os filtros atuais. Tente outra busca ou ajuste a localizacao e o status."
+          description="Nenhum projeto foi encontrado com os filtros atuais. Tente outra busca ou ajuste a localização e o status."
           title="Nenhum projeto encontrado"
         />
       ) : null}
