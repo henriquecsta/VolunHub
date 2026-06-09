@@ -65,14 +65,14 @@ Endpoints principais utilizados:
 - `POST /historico`
 
 ## Validacao final realizada
-A validacao final foi executada com backend real, frontend Vite e banco MariaDB local. Foram testados cadastro de voluntario, cadastro de organizacao, login, logout, listagem publica com filtros, detalhe de projeto, inscricao, dashboards, historico de participacao, criacao e gerenciamento de projetos, aprovacao e recusa de inscricoes, navegacao SPA e CORS entre frontend e backend.
+A validacao final foi executada com backend real, frontend Vite e banco MySQL/MariaDB instalado fora do repositorio. Foram testados cadastro de voluntario, cadastro de organizacao, login, logout, listagem publica com filtros, detalhe de projeto, inscricao, dashboards, historico de participacao, criacao e gerenciamento de projetos, aprovacao e recusa de inscricoes, navegacao SPA e CORS entre frontend e backend.
 
 Resultado registrado:
 - 16 fluxos executados.
 - 16 fluxos aprovados.
 - 0 falhas restantes.
 
-Durante a validacao, foram corrigidas inconsistencias de CORS e configuracao de dialect do Hibernate com MariaDB. Tambem foram removidos arquivos antigos sem uso.
+Durante a validacao, foram corrigidas inconsistencias de CORS e configuracao de dialect do Hibernate para ambiente MariaDB. Tambem foram removidos arquivos antigos sem uso.
 
 ## Limitacoes conhecidas
 - O logout e realizado no frontend por limpeza local da sessao, sem endpoint especifico de invalidacao de token.

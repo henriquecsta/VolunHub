@@ -5,7 +5,7 @@ Data da validacao: 2026-05-16
 ## Ambiente
 - Backend real iniciado em `http://localhost:8080`.
 - Frontend Vite iniciado em `http://127.0.0.1:5173`.
-- Banco MariaDB local em `localhost:3307`.
+- Banco MySQL/MariaDB instalado fora do repositorio e acessado via JDBC.
 
 ## Fluxos validados
 - Cadastro de voluntario.
@@ -30,7 +30,7 @@ Data da validacao: 2026-05-16
 
 ## Problemas encontrados
 - Preflight CORS retornava `403` para origem `http://localhost:5173`.
-- Backend local com MariaDB 12 nao conseguia inferir o dialect automaticamente pelo Hibernate.
+- Backend precisava de configuracao explicita do dialect do Hibernate em ambiente MariaDB.
 - Arquivos antigos com dados simulados e dashboards iniciais nao eram mais utilizados.
 
 ## Observacoes
