@@ -81,6 +81,10 @@ undo00*
 *.pid
 *.err
 
+# Official visual identity assets
+!frontend/src/assets/images/volunhub-logo.png
+!frontend/public/favicon.png
+
 # IDE / editor
 .vscode/
 *.swp
