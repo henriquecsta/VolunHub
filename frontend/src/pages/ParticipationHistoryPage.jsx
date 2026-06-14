@@ -110,8 +110,8 @@ function ParticipationHistoryPage() {
       {!isLoading && !errorMessage && !hasHistoryEntries ? (
         <StatusPanel
           actions={<Button to={ROUTES.DASHBOARD_VOLUNTEER}>Ver minhas inscrições</Button>}
-          description="Ainda não há participações registradas para o seu usuário. Quando uma organização registrar sua participação, ela aparecerá aqui."
-          title="Nenhum histórico encontrado"
+          description="Você ainda não possui participações registradas. Quando uma organização registrar sua participação em um projeto concluído, ela aparecerá aqui."
+          title="Nenhuma participação registrada"
         />
       ) : null}
 
