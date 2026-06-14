@@ -7,7 +7,7 @@ VolunHub e uma aplicacao web para conectar voluntarios a organizacoes sociais. O
 - Frontend: `https://volun-hub.vercel.app`
 - Backend/API: `https://volunhub-production.up.railway.app`
 
-Em producao, o backend roda no Railway, o banco MySQL tambem fica no Railway e o frontend roda na Vercel. Localmente, essas configuracoes nao impedem o uso normal do projeto: quando variaveis de ambiente nao sao definidas, a aplicacao usa os valores padrao do arquivo `application.properties` e do frontend.
+Em producao, o backend roda no Railway, o banco MySQL tambem fica no Railway e o frontend roda na Vercel. Localmente, essas configuracoes nao impedem o uso normal do projeto: a porta, a URL JDBC, o DDL e o dialect possuem defaults seguros, enquanto credenciais e segredo JWT devem ser informados por variaveis de ambiente.
 
 ## Requisitos
 
@@ -28,15 +28,15 @@ mvn -v
 
 As configuracoes de deploy foram preparadas para usar variaveis de ambiente em producao, mas continuam preservando a execucao local.
 
-Sem variaveis de ambiente definidas, o backend usa:
+Sem variaveis opcionais definidas, o backend usa:
 
 - Porta local: `8080`.
 - Banco: `localhost:3306`.
 - Database: `volunhub`.
-- Usuario: `root`.
-- Senha padrao: valor definido em `backend/src/main/resources/application.properties`.
 - DDL do Hibernate: `update`.
 - Dialect padrao: `org.hibernate.dialect.MySQLDialect`.
+
+A aplicacao exige `MYSQL_USERNAME`, `MYSQL_PASSWORD` e `JWT_SECRET` para iniciar. Esses valores nao ficam versionados no `application.properties`.
 
 A configuracao de porta para deploy deve seguir o padrao `server.port=${PORT:8080}`: no Railway a plataforma fornece `PORT`; localmente, sem essa variavel, a aplicacao continua em `8080`.
 
@@ -48,6 +48,26 @@ http://localhost:8080
 
 Em producao, Railway e Vercel devem fornecer as variaveis de ambiente necessarias. O backend deve aceitar a origem publica do frontend via `FRONTEND_URL`, e o frontend deve apontar para a API publica via `VITE_API_URL`.
 
+## Variaveis de Ambiente Obrigatorias
+
+Defina estas variaveis antes de iniciar o backend, tanto localmente quanto em producao:
+
+| Variavel | Onde definir | Descricao |
+| --- | --- | --- |
+| `MYSQL_USERNAME` | Local e Railway | Usuario do banco de dados. |
+| `MYSQL_PASSWORD` | Local e Railway | Senha do banco de dados. |
+| `JWT_SECRET` | Local e Railway | Segredo usado para assinar tokens JWT. Use um valor forte em producao. |
+
+Exemplo local em PowerShell:
+
+```powershell
+$env:MYSQL_USERNAME="root"
+$env:MYSQL_PASSWORD="sua-senha-local"
+$env:JWT_SECRET="um-segredo-local-com-tamanho-suficiente-para-desenvolvimento"
+```
+
+No Railway, confirme essas variaveis no painel do servico antes do deploy.
+
 ## Variaveis de ambiente
 
 ### Backend
@@ -56,9 +76,9 @@ Em producao, Railway e Vercel devem fornecer as variaveis de ambiente necessaria
 | --- | --- | --- | --- |
 | `PORT` | Obrigatoria no Railway ou injetada pela plataforma | Opcional | Porta HTTP do backend. Com default local, usa `8080`. |
 | `MYSQL_URL` | Obrigatoria | Opcional | URL JDBC do banco. Localmente usa `jdbc:mysql://localhost:3306/volunhub?...`. |
-| `MYSQL_USERNAME` | Obrigatoria | Opcional | Usuario do banco. Localmente usa `root`. |
-| `MYSQL_PASSWORD` | Obrigatoria | Opcional | Senha do banco. Localmente usa o valor padrao do `application.properties`. |
-| `JWT_SECRET` | Obrigatoria | Opcional | Chave usada para assinar tokens JWT. Em producao, use um segredo forte. |
+| `MYSQL_USERNAME` | Obrigatoria | Obrigatoria | Usuario do banco. Nao possui valor padrao versionado. |
+| `MYSQL_PASSWORD` | Obrigatoria | Obrigatoria | Senha do banco. Nao possui valor padrao versionado. |
+| `JWT_SECRET` | Obrigatoria | Obrigatoria | Chave usada para assinar tokens JWT. Nao possui valor padrao versionado. |
 | `JWT_EXPIRATION_MS` | Opcional | Opcional | Tempo de expiracao do JWT em milissegundos. Default: `86400000`. |
 | `FRONTEND_URL` | Obrigatoria | Opcional | Origem permitida no CORS. Em producao: `https://volun-hub.vercel.app`. Pode aceitar mais de uma URL separada por virgula. |
 | `HIBERNATE_DIALECT` | Opcional | Opcional | Dialect do Hibernate. Default: `org.hibernate.dialect.MySQLDialect`. Sobrescreva apenas se necessario. |
@@ -102,11 +122,12 @@ GRANT ALL PRIVILEGES ON volunhub.* TO 'volunhub'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-6. Se usar esse usuario, configure as variaveis no terminal antes de iniciar o backend:
+6. Configure as variaveis obrigatorias no terminal antes de iniciar o backend:
 
 ```powershell
 $env:MYSQL_USERNAME="volunhub"
 $env:MYSQL_PASSWORD="volunhub123"
+$env:JWT_SECRET="um-segredo-local-com-tamanho-suficiente-para-desenvolvimento"
 ```
 
 ## Backend local
@@ -117,7 +138,7 @@ Entre na pasta do backend:
 cd backend
 ```
 
-Garanta que o MariaDB/MySQL esta rodando, que o banco `volunhub` existe e que o `application.properties` aponta para a configuracao local desejada.
+Garanta que o MariaDB/MySQL esta rodando, que o banco `volunhub` existe e que `MYSQL_USERNAME`, `MYSQL_PASSWORD` e `JWT_SECRET` estao definidos no terminal.
 
 Execute:
 
@@ -181,7 +202,7 @@ Se o PowerShell bloquear `npm` por politica de execucao de scripts, use `npm.cmd
 
 1. Inicie o MariaDB ou MySQL.
 2. Crie o banco `volunhub`.
-3. Confirme as credenciais em `backend/src/main/resources/application.properties` ou configure variaveis de ambiente.
+3. Defina `MYSQL_USERNAME`, `MYSQL_PASSWORD` e `JWT_SECRET`.
 4. Inicie o backend com `mvn spring-boot:run`.
 5. Inicie o frontend com `npm.cmd run dev`.
 6. Acesse `http://localhost:5173`.
@@ -306,7 +327,7 @@ Uma pessoa que receber o projeto por ZIP deve seguir esta ordem:
 2. Extrair o ZIP em uma pasta sem caracteres especiais no caminho, se possivel.
 3. Instalar Java 21, Maven, Node.js, NPM e MariaDB/MySQL.
 4. Criar o banco `volunhub`.
-5. Conferir `application.properties` ou configurar variaveis de ambiente.
+5. Configurar as variaveis obrigatorias `MYSQL_USERNAME`, `MYSQL_PASSWORD` e `JWT_SECRET`.
 6. Entrar em `backend/` e executar `mvn clean package`.
 7. Iniciar o backend com `mvn spring-boot:run`.
 8. Entrar em `frontend/` e executar `npm.cmd install`.
