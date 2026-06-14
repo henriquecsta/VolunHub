@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import StatCard from '../components/common/StatCard';
 import PageLoader from '../components/feedback/PageLoader';
 import StatusPanel from '../components/feedback/StatusPanel';
@@ -30,6 +30,7 @@ function OrganizationDashboardPage() {
   const [projectActionErrorMessage, setProjectActionErrorMessage] = useState('');
   const [projectActionSuccessMessage, setProjectActionSuccessMessage] = useState('');
   const [refreshCount, setRefreshCount] = useState(0);
+  const subscriptionsSectionRef = useRef(null);
 
   useEffect(() => {
     let shouldIgnore = false;
@@ -96,6 +97,13 @@ function OrganizationDashboardPage() {
 
   function handleRefresh() {
     setRefreshCount((currentCount) => currentCount + 1);
+  }
+
+  function handleScrollToSubscriptions() {
+    subscriptionsSectionRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
   }
 
   async function handleDeleteProject(project) {
@@ -289,8 +297,8 @@ function OrganizationDashboardPage() {
               Acompanhe as inscrições recebidas e organize a fila de avaliação.
             </p>
           </div>
-          <Button to={ROUTES.PROJECTS} variant="ghost">
-            Consultar listagem pública
+          <Button onClick={handleScrollToSubscriptions} variant="ghost">
+            Ver inscrições recebidas
           </Button>
         </div>
       </section>
@@ -350,41 +358,50 @@ function OrganizationDashboardPage() {
         </section>
       ) : null}
 
-      {!isLoading && !errorMessage && hasProjects && !hasSubscriptions ? (
-        <StatusPanel
-          actions={<Button onClick={handleRefresh}>Atualizar</Button>}
-          description="Seus projetos ainda não receberam inscrições de voluntários."
-          title="Nenhuma inscrição recebida"
-        />
-      ) : null}
+      {!errorMessage && (hasProjects || hasSubscriptions) ? (
+        <div ref={subscriptionsSectionRef} className="scroll-mt-24">
+          {!isLoading && hasProjects && !hasSubscriptions ? (
+            <StatusPanel
+              actions={<Button onClick={handleRefresh}>Atualizar</Button>}
+              description="Seus projetos ainda não receberam inscrições de voluntários."
+              title="Nenhuma inscrição recebida"
+            />
+          ) : null}
 
-      {!errorMessage && hasSubscriptions ? (
-        <section className="space-y-4">
-          <h2 className="font-display text-2xl font-semibold text-ink-900">Inscrições recebidas</h2>
-          {actionSuccessMessage ? (
-            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-              {actionSuccessMessage}
-            </div>
+          {hasSubscriptions ? (
+            <section aria-labelledby="subscriptions-received-title" className="space-y-4">
+              <h2
+                className="font-display text-2xl font-semibold text-ink-900"
+                id="subscriptions-received-title"
+              >
+                Inscrições recebidas
+              </h2>
+              {actionSuccessMessage ? (
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                  {actionSuccessMessage}
+                </div>
+              ) : null}
+              {actionErrorMessage ? (
+                <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  {actionErrorMessage}
+                </div>
+              ) : null}
+              <div className="space-y-4">
+                {subscriptions.map((subscription) => (
+                  <OrganizationSubscriptionCard
+                    actions={getSubscriptionActions({
+                      actionInProgress,
+                      onUpdateStatus: handleUpdateSubscriptionStatus,
+                      subscription,
+                    })}
+                    key={subscription.id}
+                    subscription={subscription}
+                  />
+                ))}
+              </div>
+            </section>
           ) : null}
-          {actionErrorMessage ? (
-            <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              {actionErrorMessage}
-            </div>
-          ) : null}
-          <div className="space-y-4">
-            {subscriptions.map((subscription) => (
-              <OrganizationSubscriptionCard
-                actions={getSubscriptionActions({
-                  actionInProgress,
-                  onUpdateStatus: handleUpdateSubscriptionStatus,
-                  subscription,
-                })}
-                key={subscription.id}
-                subscription={subscription}
-              />
-            ))}
-          </div>
-        </section>
+        </div>
       ) : null}
     </div>
   );
