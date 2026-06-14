@@ -284,7 +284,7 @@ function OrganizationDashboardPage() {
       >
         <div className="grid gap-5 md:grid-cols-3">
           <StatCard label="Projetos" value={projects.length} hint="Projetos publicados pela organização." />
-          <StatCard label="Inscrições" value={subscriptions.length} hint="Voluntários aguardando acompanhamento." />
+          <StatCard label="Inscrições" value={subscriptions.length} hint="Inscrições recebidas nos projetos." />
           <StatCard label="Pendentes" value={pendingCount} hint="Inscrições que ainda precisam de decisão." />
         </div>
       </PageSection>

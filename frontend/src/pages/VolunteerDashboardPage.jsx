@@ -77,7 +77,7 @@ function VolunteerDashboardPage() {
         <div className="grid gap-5 md:grid-cols-3">
           <StatCard label="Inscrições" value={subscriptions.length} hint="Projetos em que você demonstrou interesse." />
           <StatCard label="Pendentes" value={pendingCount} hint="Aguardando avaliação da organização." />
-          <StatCard label="Aprovadas" value={approvedCount} hint="Participações confirmadas." />
+          <StatCard label="Aprovadas" value={approvedCount} hint="Inscrições aceitas pela organização." />
         </div>
       </PageSection>
 
