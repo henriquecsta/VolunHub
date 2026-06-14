@@ -11,6 +11,7 @@ import PageSection from '../components/ui/PageSection';
 import Select from '../components/ui/Select';
 import { PROJECT_STATUS_OPTIONS } from '../constants/projects';
 import { ROUTES } from '../constants/routes';
+import { useAuth } from '../hooks/useAuth';
 import { listarCategorias } from '../services/categoriaService';
 import { listarProjetos } from '../services/projetoService';
 import { getErrorMessage } from '../utils/http';
@@ -25,6 +26,7 @@ import {
 const PAGE_SIZE = 6;
 
 function ProjectsPage() {
+  const { isAuthenticated } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [filters, setFilters] = useState(() => parseProjectListQuery(searchParams).filters);
   const [activeFilters, setActiveFilters] = useState(() => parseProjectListQuery(searchParams).filters);
@@ -217,7 +219,7 @@ function ProjectsPage() {
         eyebrow="Projetos"
         title="Encontre oportunidades alinhadas ao seu perfil."
         description="Busque por tema, filtre por categoria e acompanhe projetos ativos, encerrados ou cancelados."
-        actions={<Button to={ROUTES.LOGIN} variant="ghost">Entrar para se inscrever</Button>}
+        actions={!isAuthenticated ? <Button to={ROUTES.LOGIN} variant="ghost">Entrar para se inscrever</Button> : null}
       >
         <form
           className="surface-card grid gap-4 p-6 lg:grid-cols-[1.1fr_0.9fr_0.9fr_0.75fr_auto]"
