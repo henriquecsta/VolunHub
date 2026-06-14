@@ -147,8 +147,12 @@ O preview normalmente usa `http://localhost:4173`.
 
 - `backend/`: API REST em Java, Spring Boot, Spring Security, JWT, JPA e Hibernate.
 - `frontend/`: aplicação React com Vite, React Router, Axios e Tailwind CSS.
+- `frontend/src/assets/images/volunhub-logo.png`: logo oficial do VolunHub incluída no repositório.
+- `frontend/public/favicon.png`: favicon oficial distribuído junto com o frontend.
 - `docs/`: documentação técnica, requisitos, arquitetura, endpoints e validação.
 - `scripts/`: pasta reservada para scripts auxiliares.
+
+A identidade visual oficial do VolunHub já faz parte do código-fonte. Não é necessário baixar imagens adicionais para executar o projeto por GitHub ou arquivo ZIP.
 
 ## Tecnologias utilizadas
 
