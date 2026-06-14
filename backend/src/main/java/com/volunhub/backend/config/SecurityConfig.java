@@ -20,10 +20,20 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
 public class SecurityConfig {
+
+    private static final List<String> DEFAULT_ALLOWED_ORIGINS = List.of(
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:4173",
+        "http://127.0.0.1:4173",
+        "https://volun-hub.vercel.app"
+    );
 
     @Bean
     public SecurityFilterChain securityFilterChain(
@@ -79,18 +89,38 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(
-            "http://localhost:5173",
-            "http://127.0.0.1:5173",
-            "http://localhost:4173",
-            "http://127.0.0.1:4173"
-        ));
+        configuration.setAllowedOrigins(buildAllowedOrigins());
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
+        configuration.setAllowCredentials(false);
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    private static List<String> buildAllowedOrigins() {
+        List<String> allowedOrigins = new ArrayList<>(DEFAULT_ALLOWED_ORIGINS);
+        String frontendUrl = System.getenv("FRONTEND_URL");
+
+        if (frontendUrl != null && !frontendUrl.isBlank()) {
+            Arrays.stream(frontendUrl.split(","))
+                .map(SecurityConfig::normalizeOrigin)
+                .filter(origin -> !origin.isBlank())
+                .forEach(allowedOrigins::add);
+        }
+
+        return allowedOrigins.stream().distinct().toList();
+    }
+
+    private static String normalizeOrigin(String origin) {
+        String normalizedOrigin = origin.trim();
+
+        while (normalizedOrigin.endsWith("/")) {
+            normalizedOrigin = normalizedOrigin.substring(0, normalizedOrigin.length() - 1);
+        }
+
+        return normalizedOrigin;
     }
 }
