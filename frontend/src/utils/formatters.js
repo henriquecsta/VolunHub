@@ -19,6 +19,23 @@ const ENUM_LABELS = {
   VOLUNTARIO: 'Voluntário',
 };
 
+const CATEGORY_LABELS = {
+  'apoio social': 'Apoio Social',
+  cultura: 'Cultura',
+  educacao: 'Educação',
+  'meio ambiente': 'Meio Ambiente',
+  saude: 'Saúde',
+};
+
+function normalizeLabelKey(value) {
+  return String(value)
+    .trim()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/\s+/g, ' ');
+}
+
 export function formatEnumLabel(value) {
   if (!hasValue(value)) {
     return 'Não informado';
@@ -35,6 +52,17 @@ export function formatEnumLabel(value) {
     .split('_')
     .map((chunk) => chunk.charAt(0).toUpperCase() + chunk.slice(1))
     .join(' ');
+}
+
+export function formatCategoryName(value) {
+  if (!hasValue(value)) {
+    return 'Categoria não informada';
+  }
+
+  const normalizedValue = String(value).trim();
+  const normalizedKey = normalizeLabelKey(normalizedValue);
+
+  return CATEGORY_LABELS[normalizedKey] ?? normalizedValue;
 }
 
 export function formatDate(dateValue) {

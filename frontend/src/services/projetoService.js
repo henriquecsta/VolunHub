@@ -1,6 +1,6 @@
 import api from './api';
 import { PROJECT_STATUS_VALUES } from '../constants/projects';
-import { formatDateRange, formatEnumLabel, truncateText } from '../utils/formatters';
+import { formatCategoryName, formatDateRange, formatEnumLabel, truncateText } from '../utils/formatters';
 
 const DEFAULT_PAGE = 0;
 const DEFAULT_SIZE = 6;
@@ -73,7 +73,7 @@ function adaptProjeto(apiProject) {
     status: apiProject.status,
     statusLabel: formatEnumLabel(apiProject.status),
     categoryId: apiProject.idCategoria,
-    category: apiProject.nomeCategoria ?? 'Categoria não informada',
+    category: formatCategoryName(apiProject.nomeCategoria),
     organizationId: apiProject.idOrganizacao,
     organization: apiProject.nomeOrganizacao ?? 'Organização não informada',
   };

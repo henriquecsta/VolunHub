@@ -1,9 +1,10 @@
 import api from './api';
+import { formatCategoryName } from '../utils/formatters';
 
 function adaptCategoria(apiCategoria) {
   return {
     id: apiCategoria.idCategoria,
-    name: apiCategoria.nome,
+    name: formatCategoryName(apiCategoria.nome),
     description: apiCategoria.descricao,
   };
 }
