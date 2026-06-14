@@ -1,6 +1,13 @@
 # VolunHub
 
-VolunHub é uma aplicação web para conectar voluntários a organizações sociais. O projeto possui backend Spring Boot, frontend React/Vite e banco relacional MySQL/MariaDB executado fora do repositório.
+VolunHub e uma aplicacao web para conectar voluntarios a organizacoes sociais. O projeto possui backend Spring Boot, frontend React/Vite e banco relacional MySQL/MariaDB executado fora do repositorio.
+
+## URLs de producao
+
+- Frontend: `https://volun-hub.vercel.app`
+- Backend/API: `https://volunhub-production.up.railway.app`
+
+Em producao, o backend roda no Railway, o banco MySQL tambem fica no Railway e o frontend roda na Vercel. Localmente, essas configuracoes nao impedem o uso normal do projeto: quando variaveis de ambiente nao sao definidas, a aplicacao usa os valores padrao do arquivo `application.properties` e do frontend.
 
 ## Requisitos
 
@@ -8,22 +15,74 @@ VolunHub é uma aplicação web para conectar voluntários a organizações soci
 - Maven 3.9 ou superior.
 - Node.js 18 ou superior.
 - NPM.
-- MariaDB ou MySQL instalado na máquina.
-- Git opcional, para clonar o repositório.
+- MariaDB ou MySQL instalado na maquina para execucao local.
+- Git opcional, para clonar o repositorio.
 
-## Instalação do banco
+O projeto nao possui `mvnw.cmd`. Se o Maven Wrapper nao for adicionado futuramente, instale o Maven globalmente e confirme com:
 
-O banco não deve ficar dentro da pasta do projeto. Instale o MariaDB ou MySQL normalmente no sistema operacional e mantenha o serviço ativo antes de iniciar o backend.
+```bash
+mvn -v
+```
+
+## Execucao local apos o deploy
+
+As configuracoes de deploy foram preparadas para usar variaveis de ambiente em producao, mas continuam preservando a execucao local.
+
+Sem variaveis de ambiente definidas, o backend usa:
+
+- Porta local: `8080`.
+- Banco: `localhost:3306`.
+- Database: `volunhub`.
+- Usuario: `root`.
+- Senha padrao: valor definido em `backend/src/main/resources/application.properties`.
+- DDL do Hibernate: `update`.
+- Dialect padrao: `org.hibernate.dialect.MySQLDialect`.
+
+A configuracao de porta para deploy deve seguir o padrao `server.port=${PORT:8080}`: no Railway a plataforma fornece `PORT`; localmente, sem essa variavel, a aplicacao continua em `8080`.
+
+O frontend, sem `VITE_API_URL`, chama:
+
+```text
+http://localhost:8080
+```
+
+Em producao, Railway e Vercel devem fornecer as variaveis de ambiente necessarias. O backend deve aceitar a origem publica do frontend via `FRONTEND_URL`, e o frontend deve apontar para a API publica via `VITE_API_URL`.
+
+## Variaveis de ambiente
+
+### Backend
+
+| Variavel | Producao | Local | Descricao |
+| --- | --- | --- | --- |
+| `PORT` | Obrigatoria no Railway ou injetada pela plataforma | Opcional | Porta HTTP do backend. Com default local, usa `8080`. |
+| `MYSQL_URL` | Obrigatoria | Opcional | URL JDBC do banco. Localmente usa `jdbc:mysql://localhost:3306/volunhub?...`. |
+| `MYSQL_USERNAME` | Obrigatoria | Opcional | Usuario do banco. Localmente usa `root`. |
+| `MYSQL_PASSWORD` | Obrigatoria | Opcional | Senha do banco. Localmente usa o valor padrao do `application.properties`. |
+| `JWT_SECRET` | Obrigatoria | Opcional | Chave usada para assinar tokens JWT. Em producao, use um segredo forte. |
+| `JWT_EXPIRATION_MS` | Opcional | Opcional | Tempo de expiracao do JWT em milissegundos. Default: `86400000`. |
+| `FRONTEND_URL` | Obrigatoria | Opcional | Origem permitida no CORS. Em producao: `https://volun-hub.vercel.app`. Pode aceitar mais de uma URL separada por virgula. |
+| `HIBERNATE_DIALECT` | Opcional | Opcional | Dialect do Hibernate. Default: `org.hibernate.dialect.MySQLDialect`. Sobrescreva apenas se necessario. |
+| `JPA_DDL_AUTO` | Opcional | Opcional | Estrategia de schema do Hibernate. Default: `update`. |
+
+### Frontend
+
+| Variavel | Producao | Local | Descricao |
+| --- | --- | --- | --- |
+| `VITE_API_URL` | Obrigatoria | Opcional | URL base da API. Em producao: `https://volunhub-production.up.railway.app`. Localmente usa `http://localhost:8080`. |
+
+## Instalacao do banco local
+
+O banco nao deve ficar dentro da pasta do projeto. Instale o MariaDB ou MySQL normalmente no sistema operacional e mantenha o servico ativo antes de iniciar o backend.
 
 1. Instale o MariaDB ou MySQL pelo instalador oficial ou pelo gerenciador de pacotes do seu sistema.
-2. Confirme que o servico esta rodando na porta padrão `3306`.
+2. Confirme que o servico esta rodando na porta padrao `3306`.
 3. Acesse o console do banco:
 
 ```bash
 mysql -u root -p
 ```
 
-ou, em instalações MariaDB:
+ou, em instalacoes MariaDB:
 
 ```bash
 mariadb -u root -p
@@ -35,7 +94,7 @@ mariadb -u root -p
 CREATE DATABASE volunhub CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-5. Opcionalmente, crie um usuário específico para a aplicação:
+5. Opcionalmente, crie um usuario especifico para a aplicacao:
 
 ```sql
 CREATE USER 'volunhub'@'localhost' IDENTIFIED BY 'volunhub123';
@@ -43,116 +102,131 @@ GRANT ALL PRIVILEGES ON volunhub.* TO 'volunhub'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-6. Configure a conexão do backend por variáveis de ambiente ou ajuste `backend/src/main/resources/application.properties`.
-
-Padrão atual do backend:
-
-```properties
-spring.datasource.url=${MYSQL_URL:jdbc:mysql://localhost:3306/volunhub?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
-spring.datasource.username=${MYSQL_USERNAME:root}
-spring.datasource.password=${MYSQL_PASSWORD:root}
-```
-
-Exemplo com PowerShell:
+6. Se usar esse usuario, configure as variaveis no terminal antes de iniciar o backend:
 
 ```powershell
-$env:MYSQL_URL="jdbc:mysql://localhost:3306/volunhub?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
 $env:MYSQL_USERNAME="volunhub"
 $env:MYSQL_PASSWORD="volunhub123"
-$env:JWT_SECRET="troque-este-segredo-em-ambientes-reais"
 ```
 
-Exemplo com Bash:
+## Backend local
+
+Entre na pasta do backend:
 
 ```bash
-export MYSQL_URL="jdbc:mysql://localhost:3306/volunhub?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
-export MYSQL_USERNAME="volunhub"
-export MYSQL_PASSWORD="volunhub123"
-export JWT_SECRET="troque-este-segredo-em-ambientes-reais"
+cd backend
 ```
 
-Se o banco estiver em outra porta, troque `3306` na URL. Não crie pastas como `data/`, `.local-mariadb/` ou `mysql-data/` dentro do repositório.
+Garanta que o MariaDB/MySQL esta rodando, que o banco `volunhub` existe e que o `application.properties` aponta para a configuracao local desejada.
 
-## Instalação do backend
-
-Clone ou extraia o projeto e entre na pasta do backend:
-
-```bash
-git clone <url-do-repositorio>
-cd VolunHub/backend
-```
-
-Se voce baixou por ZIP, entre na pasta extraída e depois em `backend`.
-
-Baixe dependências e gere o pacote:
-
-```bash
-mvn clean package
-```
-
-Execute o Spring Boot:
+Execute:
 
 ```bash
 mvn spring-boot:run
 ```
 
-O backend sobe por padrão em `http://localhost:8080`.
-
-## Instalação do frontend
-
-Em outro terminal, entre na pasta do frontend:
+Para gerar o pacote:
 
 ```bash
-cd VolunHub/frontend
+mvn clean package
 ```
 
-Instale as dependências:
+O backend local fica disponivel em:
+
+```text
+http://localhost:8080
+```
+
+## Frontend local
+
+Entre na pasta do frontend:
 
 ```bash
-npm install
+cd frontend
+```
+
+Instale as dependencias:
+
+```bash
+npm.cmd install
 ```
 
 Execute em desenvolvimento:
 
 ```bash
-npm run dev
+npm.cmd run dev
 ```
 
-O Vite normalmente abre em `http://localhost:5173`.
+O Vite normalmente abre em:
 
-Gere o build de produção:
+```text
+http://localhost:5173
+```
+
+Para gerar build de producao:
 
 ```bash
-npm run build
+npm.cmd run build
 ```
 
 Para validar o build localmente:
 
 ```bash
-npm run preview
+npm.cmd run preview
 ```
 
-O preview normalmente usa `http://localhost:4173`.
+Se o PowerShell bloquear `npm` por politica de execucao de scripts, use `npm.cmd`, como nos comandos acima.
 
-## Primeira execução
+## Primeira execucao local
 
 1. Inicie o MariaDB ou MySQL.
-2. Crie o banco `volunhub` e configure usuario/senha.
-3. Configure as variáveis `MYSQL_URL`, `MYSQL_USERNAME`, `MYSQL_PASSWORD` e, se necessário, `JWT_SECRET`.
+2. Crie o banco `volunhub`.
+3. Confirme as credenciais em `backend/src/main/resources/application.properties` ou configure variaveis de ambiente.
 4. Inicie o backend com `mvn spring-boot:run`.
-5. Inicie o frontend com `npm run dev`.
+5. Inicie o frontend com `npm.cmd run dev`.
 6. Acesse `http://localhost:5173`.
+
+## Deploy em producao
+
+### Railway
+
+O Railway hospeda:
+
+- Backend Spring Boot.
+- Banco MySQL.
+
+Configure no servico do backend:
+
+- `MYSQL_URL`
+- `MYSQL_USERNAME`
+- `MYSQL_PASSWORD`
+- `JWT_SECRET`
+- `FRONTEND_URL=https://volun-hub.vercel.app`
+
+Variaveis como `JWT_EXPIRATION_MS`, `HIBERNATE_DIALECT` e `JPA_DDL_AUTO` podem ser ajustadas se necessario. Para Railway com MySQL, mantenha o dialect padrao MySQL.
+
+### Vercel
+
+A Vercel hospeda o frontend React/Vite.
+
+Configure no projeto da Vercel:
+
+```text
+VITE_API_URL=https://volunhub-production.up.railway.app
+```
+
+O arquivo `frontend/vercel.json` configura fallback de SPA para que rotas diretas do React Router, como `/projetos`, `/login`, `/cadastro` e dashboards, carreguem o `index.html` em vez de retornarem `404`.
 
 ## Estrutura do projeto
 
 - `backend/`: API REST em Java, Spring Boot, Spring Security, JWT, JPA e Hibernate.
-- `frontend/`: aplicação React com Vite, React Router, Axios e Tailwind CSS.
-- `frontend/src/assets/images/volunhub-logo.png`: logo oficial do VolunHub incluída no repositório.
-- `frontend/public/favicon.png`: favicon oficial distribuído junto com o frontend.
-- `docs/`: documentação técnica, requisitos, arquitetura, endpoints e validação.
+- `frontend/`: aplicacao React com Vite, React Router, Axios e Tailwind CSS.
+- `frontend/src/assets/images/volunhub-logo.png`: logo oficial do VolunHub incluida no repositorio.
+- `frontend/public/favicon.png`: favicon oficial distribuido junto com o frontend.
+- `docs/`: documentacao tecnica, requisitos, arquitetura, endpoints e validacao.
 - `scripts/`: pasta reservada para scripts auxiliares.
 
-A identidade visual oficial do VolunHub já faz parte do código-fonte. Não é necessário baixar imagens adicionais para executar o projeto por GitHub ou arquivo ZIP.
+A identidade visual oficial do VolunHub ja faz parte do codigo-fonte. Nao e necessario baixar imagens adicionais para executar o projeto por GitHub ou arquivo ZIP.
 
 ## Tecnologias utilizadas
 
@@ -176,7 +250,13 @@ A identidade visual oficial do VolunHub já faz parte do código-fonte. Não é 
 
 ### CORS
 
-O backend permite as origens locais `http://localhost:5173`, `http://127.0.0.1:5173`, `http://localhost:4173` e `http://127.0.0.1:4173`. Se o frontend rodar em outra porta ou host, ajuste a configuração CORS em `backend/src/main/java/com/volunhub/backend/config/SecurityConfig.java`.
+Em producao, configure `FRONTEND_URL` no Railway com a origem do frontend:
+
+```text
+https://volun-hub.vercel.app
+```
+
+Localmente, o backend permite as origens de desenvolvimento e preview do Vite.
 
 ### Porta ocupada
 
@@ -185,13 +265,13 @@ O backend permite as origens locais `http://localhost:5173`, `http://127.0.0.1:5
 - Frontend preview: verifique a porta `4173`.
 - Banco: verifique a porta `3306`.
 
-Encerre o processo que esta usando a porta ou configure outra porta no serviço correspondente.
+Encerre o processo que esta usando a porta ou configure outra porta no servico correspondente.
 
-### Banco não conecta
+### Banco nao conecta
 
-Confirme que o MariaDB/MySQL esta iniciado, que o banco `volunhub` existe e que a URL JDBC aponta para o host e porta corretos. Confira também se `MYSQL_USERNAME` e `MYSQL_PASSWORD` estão definidos no mesmo terminal em que o backend e iniciado.
+Confirme que o MariaDB/MySQL esta iniciado, que o banco `volunhub` existe e que a URL JDBC aponta para o host e porta corretos. Confira tambem se `MYSQL_USERNAME` e `MYSQL_PASSWORD` estao definidos no mesmo terminal em que o backend e iniciado.
 
-### Credenciais inválidas
+### Credenciais invalidas
 
 Teste o login diretamente no banco:
 
@@ -199,9 +279,9 @@ Teste o login diretamente no banco:
 mysql -u volunhub -p -h localhost -P 3306
 ```
 
-Se necessário, recrie o usuário e reaplique o `GRANT`.
+Se necessario, recrie o usuario e reaplique o `GRANT`.
 
-### Dependências não instaladas
+### Dependencias nao instaladas
 
 No backend, confirme:
 
@@ -215,49 +295,22 @@ No frontend, confirme:
 ```bash
 node -v
 npm -v
-npm install
+npm.cmd install
 ```
 
-## Deploy local
-
-Para executar o sistema completo localmente em modo de validação:
-
-1. Inicie o MariaDB/MySQL.
-2. Configure o banco e as variáveis de ambiente.
-3. Rode o backend em `backend/`:
-
-```bash
-mvn spring-boot:run
-```
-
-4. Rode o frontend em `frontend/`:
-
-```bash
-npm run dev
-```
-
-Para simular o frontend em produção:
-
-```bash
-npm run build
-npm run preview
-```
-
-Mantenha o backend ativo enquanto usa o frontend.
-
-## Distribuição por ZIP
+## Distribuicao por ZIP
 
 Uma pessoa que receber o projeto por ZIP deve seguir esta ordem:
 
 1. Baixar o ZIP pelo GitHub ou receber o arquivo compactado.
-2. Extrair o ZIP em uma pasta sem caractéres especiais no caminho, se possivel.
+2. Extrair o ZIP em uma pasta sem caracteres especiais no caminho, se possivel.
 3. Instalar Java 21, Maven, Node.js, NPM e MariaDB/MySQL.
 4. Criar o banco `volunhub`.
-5. Configurar `MYSQL_URL`, `MYSQL_USERNAME` e `MYSQL_PASSWORD`.
+5. Conferir `application.properties` ou configurar variaveis de ambiente.
 6. Entrar em `backend/` e executar `mvn clean package`.
 7. Iniciar o backend com `mvn spring-boot:run`.
-8. Entrar em `frontend/` e executar `npm install`.
-9. Iniciar o frontend com `npm run dev`.
+8. Entrar em `frontend/` e executar `npm.cmd install`.
+9. Iniciar o frontend com `npm.cmd run dev`.
 10. Acessar `http://localhost:5173`.
 
-Arquivos locais de banco, caches, logs, instaladores e dependências baixadas localmente não fazem parte da distribuição do projeto.
+Arquivos locais de banco, caches, logs, instaladores e dependencias baixadas localmente nao fazem parte da distribuicao do projeto.
